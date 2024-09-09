@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:haven7_flutterweb/dashboard.dart';
+import 'package:haven7_flutterweb/ui/dashboard.dart';
 
 
 void main() {
@@ -11,7 +11,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Homepage();
+    return const MaterialApp(debugShowCheckedModeBanner: false,
+    home: Dashboard());
     
   }
 
