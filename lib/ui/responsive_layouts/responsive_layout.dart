@@ -1,3 +1,7 @@
+export 'package:haven7_flutterweb/ui/responsive_layouts/desktop_layout.dart';
+export 'package:haven7_flutterweb/ui/responsive_layouts/medium_layout.dart';
+export 'package:haven7_flutterweb/ui/responsive_layouts/mobile_layout.dart';
+
 import 'package:flutter/material.dart';
 
 class ResponsiveLayout extends StatelessWidget {
@@ -16,7 +20,7 @@ class ResponsiveLayout extends StatelessWidget {
       double screenWidth = constraints.maxWidth;
       if (screenWidth < 600) {
         return smallSize;
-      } else if (screenWidth < 1200) {
+      } else if (screenWidth < 1400) {
         return mediumSize;
       } else {
         return largeSize;

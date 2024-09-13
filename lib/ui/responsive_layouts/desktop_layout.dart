@@ -8,8 +8,11 @@ class DesktopLayout extends StatefulWidget {
 }
 
 class _DesktopLayoutState extends State<DesktopLayout> {
+  
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(backgroundColor: Colors.black87,);
+    return const Scaffold(
+      backgroundColor: Colors.black87,
+    );
   }
 }
