@@ -10,6 +10,7 @@ class MobileLayout extends StatefulWidget {
 class _MobileLayoutState extends State<MobileLayout> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(backgroundColor: Colors.amberAccent,);
+    return const Scaffold(backgroundColor: Colors.amberAccent,
+    body: Center(child: Text('butu'),),);
   }
 }
