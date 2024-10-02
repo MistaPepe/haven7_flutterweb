@@ -39,9 +39,7 @@ class _CardTemplateState extends State<CardTemplate> {
               ? [ 
                   BoxShadow(
                     color: const Color.fromARGB(61, 0, 148, 216).withOpacity(0.2),
-                    spreadRadius: 3.0, // Adjust shadow spread
-                    blurRadius: 5.0, // Adjust shadow blur
-                    offset: Offset(0, 3), // Adjust shadow offset
+                  
                   ),
                 ]
               : null, // Remove shadow on non-hover

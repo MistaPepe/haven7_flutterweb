@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
-
 // drawer data {
 
-bool isDrawerOpen = false;
+class DrawerRouter {
+  static bool isDrawerOpen = false;
+  //XD HAHAHAHAH
+  static List<bool> isHovered = [false, false, false, false, false];
+  static String currentPage = 'Account';
+}
+
 
 enum AdminDrawer {
   dashboard(
@@ -28,6 +33,6 @@ enum AdminDrawer {
   final IconData icon;
 }
 
-String currentPage = 'Account';
+
 
 // end drawer data

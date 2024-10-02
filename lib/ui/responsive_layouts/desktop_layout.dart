@@ -14,10 +14,10 @@ class _DesktopLayoutState extends State<DesktopLayout> {
   @override
   Widget build(BuildContext context) {
     var menuButton = IconButton(
-      icon: isDrawerOpen ? Icon(Icons.close) : Icon(Icons.menu),
+      icon: DrawerRouter.isDrawerOpen ? const Icon(Icons.close) : const Icon(Icons.menu),
       onPressed: () {
         setState(() {
-          isDrawerOpen = !isDrawerOpen;
+          DrawerRouter.isDrawerOpen = !DrawerRouter.isDrawerOpen;
         });
       },
     );
@@ -60,7 +60,7 @@ class CustomDrawerDesktop extends DrawerRouterList {
   Widget container(List<Widget> routerList) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
-      width: isDrawerOpen ? 250 : 80,
+      width: DrawerRouter.isDrawerOpen ? 250 : 80,
       height: double.infinity,
       color: Colors.grey[200],
       child: Padding(

@@ -46,18 +46,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        AspectRatio(
-          aspectRatio: 1.70,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              right: 18,
-              left: 12,
-              top: 24,
-              bottom: 12,
-            ),
-            child: LineChart(
-              showAvg ? avgData() : mainData(),
-            ),
+        Padding(
+          padding: const EdgeInsets.only(
+            right: 18,
+            left: 12,
+            top: 24,
+            bottom: 12,
+          ),
+          child: LineChart(
+            showAvg ? avgData() : mainData(),
           ),
         ),
         SizedBox(
