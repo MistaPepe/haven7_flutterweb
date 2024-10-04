@@ -70,7 +70,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               'avg',
               style: TextStyle(
                 fontSize: 12,
-                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
+                color: showAvg ? Colors.black.withOpacity(0.5) : Colors.black,
               ),
             ),
           ),
@@ -83,7 +83,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 16,
-      color: Colors.white
+      color: Colors.black
     );
     Widget text;
     switch (value.toInt()) {
@@ -111,7 +111,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 15,
-      color: Colors.white
+      color: Colors.black
     );
     String text;
     switch (value.toInt()) {

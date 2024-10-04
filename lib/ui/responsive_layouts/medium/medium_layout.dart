@@ -35,32 +35,34 @@ class _MediumLayoutState extends State<MediumLayout> {
           children: [
             //Drawer Widget
             Stack(children: [
-              CustomDrawerMedium(),
+              CustomDrawerMediumAndDesktop(),
               Positioned(top: 5, left: 10, child: menuButton),
             ]),
 
             //Body Widget
-            const Expanded(
+             Expanded(
               child: Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ///first column, the main body for medium size broweser
                     ///consist of cards, graph, and clients
-                    Text(
+                    const Text(
                       'Welcome to Haven 7!',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'Montserrat',
-                        color: Colors.blue, 
+                        color:  Color.fromARGB(255, 0, 99, 145),
                         letterSpacing:
                             1.2, 
                       ),
                     ),
-                    SizedBox(height: 20),
-                    CardTemplate(
+                   const SizedBox(height: 20),
+                    CardTemplate(baseWidth: 200, baseHeight: 75, child: Container()),
+                    const SizedBox(height: 20),
+                    const CardTemplate(
                       baseHeight: 300,
                       baseWidth: 700,
                       child: LineChartSample2(),
@@ -70,26 +72,6 @@ class _MediumLayoutState extends State<MediumLayout> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class CustomDrawerMedium extends DrawerRouterList {
-  const CustomDrawerMedium({super.key});
-
-  @override
-  Widget container(List<Widget> routerList) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
-      width: DrawerRouter.isDrawerOpen ? 250 : 75,
-      height: double.infinity,
-      color: const Color.fromARGB(255, 0, 98, 143),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(5, 60, 5, 0),
-        child: ListView(
-          children: routerList,
         ),
       ),
     );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../provider/provider.dart';
 
+
+// building block for icon and the name of the router
 mixin RouterList {
   Widget routerRow(
       BuildContext context, String name, IconData icon, bool isHover) {
@@ -8,7 +10,7 @@ mixin RouterList {
       if (DrawerRouter.currentPage == name) {
         return [Colors.blue.shade200, Colors.blue.shade400];
       } else if (isHover) {
-        return [Colors.blue.shade400, Colors.blue.shade800];
+        return [const Color.fromARGB(255, 66, 108, 245), const Color.fromARGB(255, 21, 61, 192)];
       } else {
         return [const Color.fromARGB(0, 245, 55, 55), Colors.transparent];
       }
@@ -41,6 +43,7 @@ mixin RouterList {
   }
 }
 
+// blueprint that access the admindrawer class to form drawer
 abstract class DrawerRouterList extends StatefulWidget with RouterList {
   const DrawerRouterList({super.key});
 
@@ -79,5 +82,25 @@ class _DrawerRouterListState extends State<DrawerRouterList> {
   @override
   Widget build(BuildContext context) {
     return widget.container((routerList()));
+  }
+}
+
+class CustomDrawerMediumAndDesktop extends DrawerRouterList {
+  const CustomDrawerMediumAndDesktop({super.key});
+
+  @override
+  Widget container(List<Widget> routerList) {
+    return AnimatedContainer(
+      duration:const Duration(milliseconds: 250),
+      width: DrawerRouter.isDrawerOpen ? 220 : 75,
+      height: double.infinity,
+      color: const Color.fromARGB(255, 0, 14, 145),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(5, 60, 5, 0),
+        child: ListView(
+          children: routerList,
+        ),
+      ),
+    );
   }
 }
