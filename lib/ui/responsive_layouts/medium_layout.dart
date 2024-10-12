@@ -16,11 +16,11 @@ class _MediumLayoutState extends State<MediumLayout> {
       icon: DrawerRouter.isDrawerOpen
           ? const Icon(
               Icons.close,
-              color: Colors.white,
+              color: Colors.black,
             )
           : const Icon(
               Icons.menu,
-              color: Colors.white,
+              color: Colors.black,
             ),
       onPressed: () {
         setState(() {
@@ -34,39 +34,27 @@ class _MediumLayoutState extends State<MediumLayout> {
         child: Row(
           children: [
             //Drawer Widget
-            Stack(children: [
-              CustomDrawerMediumAndDesktop(),
-              Positioned(top: 5, left: 10, child: menuButton),
-            ]),
+            // ignore: prefer_const_constructors
+            CustomDrawerMediumAndDesktop(),
 
             //Body Widget
-             Expanded(
+            Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ///first column, the main body for medium size broweser
-                    ///consist of cards, graph, and clients
-                    const Text(
-                      'Welcome to Haven 7!',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: 'Montserrat',
-                        color:  Color.fromARGB(255, 0, 99, 145),
-                        letterSpacing:
-                            1.2, 
-                      ),
+                    //appbar
+                    Row(
+                      children: [
+                        menuButton,
+                      ],
                     ),
-                   const SizedBox(height: 20),
-                    CardTemplate(baseWidth: 200, baseHeight: 75, child: Container()),
                     const SizedBox(height: 20),
-                    const CardTemplate(
-                      baseHeight: 300,
-                      baseWidth: 700,
-                      child: LineChartSample2(),
-                    ),
+
+                    //First Column
+                    //TODO: edit this to make it responsive to pages
+                    const CardStatisticsWrapper(),
                   ],
                 ),
               ),
