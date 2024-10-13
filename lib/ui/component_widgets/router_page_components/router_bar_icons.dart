@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../provider/provider.dart';
 
 // building block for icon and the name of the router
+//builds row to return an icon and name only. not the whole row
 mixin RouterList {
   Widget routerRow(
       BuildContext context, String name, IconData icon, bool isHover) {
@@ -21,18 +23,20 @@ mixin RouterList {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Tooltip(
+        waitDuration: const Duration(milliseconds: 1000),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.blueGrey.withOpacity(0.8),
           border: Border.all(color: Colors.white),
         ),
-        textStyle: TextStyle(
+        textStyle: const TextStyle(
           fontSize: 12,
           color: Colors.white,
         ),
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         message: name,
         child: Container(
+          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
           decoration: BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -45,12 +49,21 @@ mixin RouterList {
               : const EdgeInsets.fromLTRB(16, 12, 0, 12),
           child: Row(
             children: [
-              Icon(icon, color: Colors.white, size: 28),
+              Icon(icon,
+                  color: (DrawerRouter.currentPage == name)
+                      ? const Color.fromARGB(255, 1, 21, 87)
+                      : Colors.white,
+                  size: 28),
               if (DrawerRouter.isDrawerOpen) const SizedBox(width: 15),
               if (DrawerRouter.isDrawerOpen)
                 Text(
                   name,
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: (DrawerRouter.currentPage == name)
+                        ? const Color.fromARGB(255, 1, 21, 87)
+                        : Colors.white,
+                  ),
                 ),
             ],
           ),
@@ -80,22 +93,25 @@ abstract class DrawerRouterList extends StatefulWidget with RouterList {
               children: [
                 Padding(
                   padding: (DrawerRouter.isDrawerOpen)
-                      ? EdgeInsets.fromLTRB(0, 20, 10, 20)
-                      : EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  child: Image.asset(
-                    'lib/src/h7logo.png',
-                    width: 30,
-                    height: 30,
+                      ? const EdgeInsets.fromLTRB(0, 20, 10, 20)
+                      : const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    width: (DrawerRouter.isDrawerOpen) ? 70 : 50,
+                      height: (DrawerRouter.isDrawerOpen) ? 70 : 50,
+                    child: Image.asset(
+                      'lib/src/h7logo.png',
+                    ),
                   ),
                 ),
                 if (DrawerRouter.isDrawerOpen)
-                  Text(
-                    'Haven 7!',
-                    style: TextStyle(
-                      fontSize: 20,
+                    Text(
+                    'Haven 7',
+                    style: GoogleFonts.lato(
+                      fontSize: 25,
                       fontWeight: FontWeight.w900,
-                      fontFamily: 'Montserrat',
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color:const Color.fromARGB(255, 255, 255, 255),
                       letterSpacing: 1.2,
                     ),
                   ),
@@ -156,10 +172,10 @@ class _DrawerRouterListState extends State<DrawerRouterList> {
           ]),
         ),
         Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: routerListMap(low: true),
-          ),
+          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+            const Divider(),
+            ...routerListMap(low: true),
+          ]),
         )
       ],
     );
@@ -180,7 +196,7 @@ class CustomDrawerMediumAndDesktop extends DrawerRouterList {
         duration: const Duration(milliseconds: 250),
         width: DrawerRouter.isDrawerOpen ? 250 : 75,
         height: double.infinity,
-        color: const Color.fromARGB(255, 0, 14, 145),
+        color: const Color.fromARGB(255, 28, 41, 158),
         child: layoutDrawer(routerList));
   }
 }
@@ -194,7 +210,7 @@ class CustomDrawerMobile extends DrawerRouterList {
         shape: const BeveledRectangleBorder(),
         child: Container(
             height: double.infinity,
-            color: const Color.fromARGB(255, 0, 14, 145),
+            color: const Color.fromARGB(255, 28, 41, 158),
             child: layoutDrawer(routerList)));
   }
 }

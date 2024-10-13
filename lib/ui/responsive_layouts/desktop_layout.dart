@@ -13,24 +13,8 @@ class DesktopLayout extends StatefulWidget {
 class _DesktopLayoutState extends State<DesktopLayout> {
  @override
   Widget build(BuildContext context) {
-    var menuButton = IconButton(
-      icon: DrawerRouter.isDrawerOpen
-          ? const Icon(
-              Icons.close,
-              color: Colors.white,
-            )
-          : const Icon(
-              Icons.menu,
-              color: Colors.white,
-            ),
-      onPressed: () {
-        setState(() {
-          DrawerRouter.isDrawerOpen = !DrawerRouter.isDrawerOpen;
-        });
-      },
-    );
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 249, 243),
+      backgroundColor: const Color.fromARGB(255, 28, 41, 158),
       body: Center(
         child: Row(
           children: [
@@ -40,31 +24,35 @@ class _DesktopLayoutState extends State<DesktopLayout> {
 
             //Body Widget
              Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      children: [
-                        ///first column, the main body for medium size broweser
-                        ///consist of cards, graph, and clients
-      
-                       const SizedBox(height: 20),
-                        
-                        CardTemplate(baseWidth: 200, baseHeight: 75, child: Container()),
-                        CardTemplate(baseWidth: 200, baseHeight: 75, child: Container()),
-                        CardTemplate(baseWidth: 200, baseHeight: 75, child: Container()),
-                        CardTemplate(baseWidth: 200, baseHeight: 75, child: Container()),
-                        const SizedBox(height: 20),
-                        const CardTemplate(
-                          baseHeight: 300,
-                          baseWidth: 700,
-                          child: LineChartSample2(),
-                        ),
-                      ],
-                    ),
-                  ],
+              child: Container(
+                  margin:const EdgeInsets.fromLTRB(0, 15, 10, 5),
+                decoration: const BoxDecoration(
+                    color:  Color.fromARGB(255, 255, 249, 243),
+                    borderRadius: BorderRadius.all(
+                     Radius.circular(20)
+                    )),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        children: [
+                          ///first column, the main body for medium size broweser
+                          ///consist of cards, graph, and clients
+                      
+                         const SizedBox(height: 20),
+                          CardStatisticsWrapper(),
+                          const SizedBox(height: 20),
+                          const CardTemplate(
+                            baseHeight: 300,
+                            baseWidth: 700,
+                            child: LineChartSample2(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

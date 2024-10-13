@@ -2,15 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../components.dart';
 
-class CardStatisticsWrapper extends StatefulWidget {
+class CardStatisticsWrapper extends StatelessWidget {
   const CardStatisticsWrapper({super.key});
-
-  @override
-  State<CardStatisticsWrapper> createState() => _CardStatisticsWrapperState();
-}
-
-class _CardStatisticsWrapperState extends State<CardStatisticsWrapper> {
- 
 
   @override
   Widget build(BuildContext context) {
@@ -24,3 +17,13 @@ class _CardStatisticsWrapperState extends State<CardStatisticsWrapper> {
                             baseWidth: 200, baseHeight: 75, child: Container()),],);
   }
 }
+
+class UpperCardTemplate extends StatelessWidget {
+  const UpperCardTemplate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+

@@ -6,6 +6,29 @@ import 'package:flutter/material.dart';
 
 import '../provider/provider.dart';
 
+
+class Websitelayout extends StatefulWidget {
+  const Websitelayout({super.key});
+
+  @override
+  State<Websitelayout> createState() => _WebsitelayoutState();
+}
+
+class _WebsitelayoutState extends State<Websitelayout> {
+   @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ResponsiveLayout(
+        smallSize: MobileLayout(),
+        mediumSize: MediumLayout(),
+        largeSize: DesktopLayout(),
+      ),
+    );
+  }
+}
+
+
 class ResponsiveLayout extends StatelessWidget {
   final Widget smallSize;
   final Widget mediumSize;
@@ -34,23 +57,3 @@ class ResponsiveLayout extends StatelessWidget {
   }
 }
 
-class Websitelayout extends StatefulWidget {
-  const Websitelayout({super.key});
-
-  @override
-  State<Websitelayout> createState() => _WebsitelayoutState();
-}
-
-class _WebsitelayoutState extends State<Websitelayout> {
-   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ResponsiveLayout(
-        smallSize: MobileLayout(),
-        mediumSize: MediumLayout(),
-        largeSize: DesktopLayout(),
-      ),
-    );
-  }
-}

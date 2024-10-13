@@ -22,8 +22,7 @@ class _MobileLayoutState extends State<MobileLayout> {
       body: Center(
         child: Column(
           children: [
-            Stack(children: [
-            ]),
+           CardStatisticsWrapper(),
             Text('butu'),
           ],
         ),

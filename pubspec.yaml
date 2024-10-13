@@ -38,6 +38,7 @@ dependencies:
   fl_chart: ^0.69.0
   bloc: ^8.1.4
   flutter_bloc: ^8.1.6
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +89,6 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
-  #
+  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
