@@ -7,12 +7,13 @@ import '../../../provider/provider.dart';
 mixin RouterList {
   Widget routerRow(
       BuildContext context, String name, IconData icon, bool isHover) {
+        
     List<Color> getGradientColors() {
       if (DrawerRouter.currentPage == name) {
-        return [Colors.blue.shade200, Colors.blue.shade400];
+        return [const Color.fromARGB(255, 132, 233, 247), const Color.fromARGB(255, 74, 167, 243)];
       } else if (isHover) {
         return [
-          const Color.fromARGB(255, 66, 108, 245),
+          const Color.fromARGB(255, 81, 120, 247),
           const Color.fromARGB(255, 21, 61, 192)
         ];
       } else {
@@ -78,7 +79,7 @@ mixin RouterList {
 abstract class DrawerRouterList extends StatefulWidget with RouterList {
   const DrawerRouterList({super.key});
 
-  //widget to ovorride
+  //widget to override
   Widget container(Widget routerList);
 
   //method for the consumer to use to layout the drawer
@@ -94,12 +95,12 @@ abstract class DrawerRouterList extends StatefulWidget with RouterList {
                 Padding(
                   padding: (DrawerRouter.isDrawerOpen)
                       ? const EdgeInsets.fromLTRB(0, 20, 10, 20)
-                      : const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                      : const EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    width: (DrawerRouter.isDrawerOpen) ? 70 : 50,
-                      height: (DrawerRouter.isDrawerOpen) ? 70 : 50,
+                    width: (DrawerRouter.isDrawerOpen) ? 70 : 40,
+                      height: (DrawerRouter.isDrawerOpen) ? 70 : 40,
                     child: Image.asset(
                       'lib/src/h7logo.png',
                     ),

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-class CardTemplate extends StatefulWidget {
+class CardTemplateBox extends StatefulWidget {
   final int baseWidth;
   final int baseHeight;
   final Widget child;
-  const CardTemplate(
+  const CardTemplateBox(
       {super.key,
       required this.baseWidth,
       required this.baseHeight,
       required this.child});
 
   @override
-  State<CardTemplate> createState() => _CardTemplateState();
+  State<CardTemplateBox> createState() => _CardTemplateBoxState();
 }
 
-class _CardTemplateState extends State<CardTemplate> {
+class _CardTemplateBoxState extends State<CardTemplateBox> {
   bool _isHovering = false;
 
   @override
@@ -59,13 +59,13 @@ class _CardTemplateState extends State<CardTemplate> {
   }
 }
 
-class CardStatistics extends StatelessWidget {
+class UpperCardTemplate extends StatelessWidget {
   final int numbers;
   final String title;
-  final Icon icon;
+  final IconData icon;
   final int percentage;
 
-  const CardStatistics(
+  const UpperCardTemplate(
       {super.key,
       required this.numbers,
       required this.title,
@@ -74,9 +74,61 @@ class CardStatistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Stack(
+              alignment: Alignment.center,
+              children: [
+                // Background container
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                // Icon at the top
+                Positioned(
+                  top: 20,
+                  child: Icon(
+                    icon,
+                    size: 40,
+                    color: Colors.blue,
+                  ),
+                ),
+                // Title below the icon
+                Positioned(
+                  top: 70,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                // Number below the title
+                Positioned(
+                  top: 100,
+                  child: Text(
+                    '$numbers',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                // Percentage at the bottom
+                Positioned(
+                  bottom: 20,
+                  child: Text(
+                    '+ $percentage%',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+              ],
+            );
   }
 }
-
-
-

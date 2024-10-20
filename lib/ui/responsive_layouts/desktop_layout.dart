@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../provider/provider.dart';
 import '../component_widgets/components.dart';
 
 class DesktopLayout extends StatefulWidget {
@@ -44,7 +43,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                          const SizedBox(height: 20),
                           CardStatisticsWrapper(),
                           const SizedBox(height: 20),
-                          const CardTemplate(
+                          const CardTemplateBox(
                             baseHeight: 300,
                             baseWidth: 700,
                             child: LineChartSample2(),

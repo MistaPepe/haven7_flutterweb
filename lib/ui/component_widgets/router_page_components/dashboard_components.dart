@@ -7,23 +7,46 @@ class CardStatisticsWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(children: [CardTemplate(
-                            baseWidth: 200, baseHeight: 75, child: Container()),
-                        CardTemplate(
-                            baseWidth: 200, baseHeight: 75, child: Container()),
-                        CardTemplate(
-                            baseWidth: 200, baseHeight: 75, child: Container()),
-                        CardTemplate(
-                            baseWidth: 200, baseHeight: 75, child: Container()),],);
+    return const Wrap(
+      children: [
+        CardTemplateBox(
+            baseHeight: 135,
+            baseWidth: 280,
+            child: UpperCardTemplate(
+              icon: Icons.monetization_on,
+              title: 'Today Sales',
+              numbers: 3000,
+              percentage: 11,
+            )),
+        CardTemplateBox(
+            baseHeight: 135,
+            baseWidth: 280,
+            child: UpperCardTemplate(
+              icon: Icons.bar_chart,
+              title: 'Today Sales',
+              numbers: 3000,
+              percentage: 10,
+            )),
+        CardTemplateBox(
+            baseHeight: 135,
+            baseWidth: 280,
+            child: UpperCardTemplate(
+              icon: Icons.shopping_cart,
+              title: 'Today Sales',
+              numbers: 3000,
+              percentage: 10,
+            )),
+        CardTemplateBox(
+            baseHeight: 135,
+            baseWidth: 280,
+            child: UpperCardTemplate(
+              icon: Icons.money_off,
+              title: 'Today Sales',
+              numbers: 3000,
+              percentage: 10,
+            )),
+      ],
+    );
   }
 }
-
-class UpperCardTemplate extends StatelessWidget {
-  const UpperCardTemplate({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
+//butu
