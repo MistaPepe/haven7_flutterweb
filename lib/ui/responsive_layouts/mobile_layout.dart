@@ -18,9 +18,10 @@ class _MobileLayoutState extends State<MobileLayout> {
       appBar: AppBar(
         backgroundColor: Colors.white,
       ),
-      drawer: CustomDrawerMobile(),
-      body: Center(
-        child: Column(
+      drawer: CustomConcealingDrawer(),
+      body: Container(
+        color: Color.fromARGB(255, 236, 236, 236),
+        child: ListView(
           children: [
            CardStatisticsWrapper(),
             Text('butu'),

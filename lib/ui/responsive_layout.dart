@@ -43,7 +43,7 @@ class ResponsiveLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       double screenWidth = constraints.maxWidth;
-      if (screenWidth < 600) {
+      if (screenWidth < 700) {
         DrawerRouter.isDrawerOpen = true;
         return smallSize;
       } else if (screenWidth < 1400) {
