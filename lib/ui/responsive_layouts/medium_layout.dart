@@ -81,15 +81,17 @@ class _MediumLayoutState extends State<MediumLayout> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         //appbar or top body
-                        // Row(
-                        //   children: [
-                        //     menuButton,
-                        //     //appbar widget
-                        //   ],
-                        // ),
-                        menuButton,
-                        const SizedBox(height: 20),
-                        tabControl()
+                        Row(
+                          children: [
+                            menuButton,
+                            //appbar widget
+                            Expanded(child: Align(
+                              alignment: Alignment.centerRight,
+                              child: menuButton)),
+                          ],
+                        ),
+
+                        Expanded(child: tabControl())
                       ],
                     ),
                   ),
@@ -113,25 +115,17 @@ class DashboardMedium extends StatefulWidget {
 class _DashboardMediumState extends State<DashboardMedium> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView(
+    return ScrollConfiguration(
+    behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+      child: Column(
         children: [
           const CardStatisticsWrapper(),
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                  offset: Offset(0, 3), // Changes the shadow position
-                ),
-              ],
-            ),
-            child:LineChartSample2())
+          Flexible(child: Row(
+            children: [
+              Flexible(child: GraphOverallSales()),
+    
+            ],
+          ))
         ],
       ),
     );

@@ -6,12 +6,18 @@ class CardTemplateBox extends StatefulWidget {
   final int baseHeight;
   final Widget child;
   final Widget? background;
+  final Color color;
+  final bool isCurved;
+  final bool haveShadow;
   const CardTemplateBox(
       {super.key,
       required this.baseWidth,
       required this.baseHeight,
       required this.child,
-      this.background});
+      this.background,
+      this.color = Colors.white,
+      this.isCurved = true,
+      this.haveShadow = true});
 
   @override
   State<CardTemplateBox> createState() => _CardTemplateBoxState();
@@ -22,26 +28,33 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isHovering = true),
-        onExit: (_) => setState(() => _isHovering = false),
-        child: Transform.scale(
-          scale: _isHovering ? 1.02 : 1.0,
-          child: SizedBox(
-            width: widget.baseWidth.toDouble(),
-            height: widget.baseHeight.toDouble(),
-            child: GestureDetector(
-              onTap: () {
-                debugPrint('Card tapped.');
-              },
-              child: Stack(
-                children: [
-                  widget.child,
-                ],
-              ),
-            ),
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovering = true),
+      onExit: (_) => setState(() => _isHovering = false),
+      child: Transform.scale(
+        scale: _isHovering ? 1.015 : 1.0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: widget.color,
+            borderRadius: (widget.isCurved) ? BorderRadius.circular(10) : null,
+            boxShadow: (widget.haveShadow)
+                ? [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 0), // Changes the shadow position
+                    )
+                  ]
+                : null,
+          ),
+          width: widget.baseWidth.toDouble(),
+          height: widget.baseHeight.toDouble(),
+          child: GestureDetector(
+            onTap: () {
+              debugPrint('Card tapped.');
+            },
+            child: widget.child,
           ),
         ),
       ),
@@ -49,68 +62,47 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
   }
 }
 
-//template for card widget showing earnings and more
-class UpperCardTemplate extends StatelessWidget {
-  final int numbers;
-  final String title;
-  final IconData icon;
-  final int percentage;
-
-  const UpperCardTemplate(
+class CardTemplateSimple extends StatelessWidget {
+  final bool isCurved;
+  final bool haveShadow;
+  final int? baseWidth;
+  final int? baseHeight;
+  final Color? color;
+  final Widget child;
+  const CardTemplateSimple(
       {super.key,
-      required this.numbers,
-      required this.title,
-      required this.icon,
-      required this.percentage});
+      this.isCurved = true,
+      this.haveShadow = true,
+      this.color = Colors.white,
+      required this.child,
+      this.baseWidth,
+      this.baseHeight});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Background container
-        Container(
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 110, 229, 238),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        Column(
-          children: [
-            Icon(
-              icon,
-              size: 40,
-              color: Colors.blue,
-            ),
-            // Title below the icon
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            // Number below the title
-            Text(
-              '$numbers',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w900,
-                color: Colors.black,
-              ),
-            ),
-            // Percentage at the bottom
-            Text(
-              '+ $percentage%',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.green,
-              ),
-            ),
-          ],
-        ),
-      ],
+    return Container(
+      height: (baseHeight != null) ? baseHeight?.toDouble() : null,
+      width: (baseWidth != null) ? baseWidth?.toDouble() : null,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: (isCurved) ? BorderRadius.circular(10) : null,
+        boxShadow: (haveShadow)
+            ? [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  offset: const Offset(0, 0), // Changes the shadow position
+                )
+              ]
+            : null,
+      ),
+      child: GestureDetector(
+        onTap: () {
+          debugPrint('Card tapped.');
+        },
+        child: child,
+      ),
     );
   }
 }

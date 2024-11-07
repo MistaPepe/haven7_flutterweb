@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../provider/provider.dart';
 import '../component_widgets/components.dart';
 
 class DesktopLayout extends StatefulWidget {
@@ -10,6 +11,14 @@ class DesktopLayout extends StatefulWidget {
 
 
 class _DesktopLayoutState extends State<DesktopLayout> {
+
+    Widget tabControl() {
+    if (DrawerRouter.currentPage == 'Dashboard') {
+      return const DashboardDesktop();
+    } else {
+      return const Placeholder();
+    }
+  }
  @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,21 +44,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Wrap(
-                        children: [
-                          ///first column, the main body for medium size broweser
-                          ///consist of cards, graph, and clients
-                      
-                         const SizedBox(height: 20),
-                          CardStatisticsWrapper(),
-                          const SizedBox(height: 20),
-                          const CardTemplateBox(
-                            baseHeight: 300,
-                            baseWidth: 700,
-                            child: LineChartSample2(),
-                          ),
-                        ],
-                      ),
+                      tabControl(),
                     ],
                   ),
                 ),
@@ -60,3 +55,27 @@ class _DesktopLayoutState extends State<DesktopLayout> {
       ),
     );
   }}
+
+  class DashboardDesktop extends StatelessWidget {
+  const DashboardDesktop({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return  Expanded(
+      child: ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: Column(
+          children: [
+            const CardStatisticsWrapper(),
+            Flexible(child: Row(
+              children: [
+                Flexible(child: GraphOverallSales()),
+
+              ],
+            ))
+          ],
+        ),
+      ),
+    );
+  }
+}
