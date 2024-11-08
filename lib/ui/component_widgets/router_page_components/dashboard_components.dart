@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../components.dart';
@@ -188,15 +189,106 @@ class GraphOverallSales extends StatefulWidget {
 }
 
 class _GraphOverallSalesState extends State<GraphOverallSales> {
+  // Initial selected value
+  static String selectedValue = 'Option 1';
+
+  // List of options
+  static List<String> dropdownOptions = [
+    'Option 1',
+    'Option 2',
+    'Option 3',
+    'Option 4'
+  ];
+
+  static List<Color> colorIndicator = [
+    Colors.green,
+    Colors.orangeAccent,
+    Colors.redAccent,
+    Colors.blueAccent,
+  ];
+
+  final _indicates = List.generate(4, (index) {
+    return SizedBox(
+        width: 100,
+        child: Indicator(
+            color: colorIndicator[index], text: 'butu', isSquare: true));
+  });
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: CardTemplateSimple(
-          baseHeight: 400,
-          baseWidth: 400,
-          child: LineGraphAverage()))
-      ],
+    
+    var optionButton = DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        icon: Icon(
+          size: 30,
+          Icons.more_vert,
+          color: Colors.black,
+        ),
+        value: selectedValue,
+        items: dropdownOptions.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          );
+        }).toList(),
+        onChanged: (newValue) {
+          setState(() {
+            selectedValue = newValue!;
+          });
+        },
+        dropdownColor: Colors.blueGrey.shade700, // Background color of dropdown
+        style: TextStyle(color: Colors.black), // Color for selected item text
+        borderRadius: BorderRadius.circular(12), // Rounded corners for dropdown
+        menuMaxHeight: 200, // Limit the max height if there are many options
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
+      child: Row(
+        children: [
+          Expanded(
+              flex: 5,
+              child: CardTemplateSimple(
+                  baseHeight: 400,
+                  baseWidth: 400,
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(right: 15,top: 5),
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: optionButton,
+                        ),
+                      ),
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: const LineGraphAverage(),
+                      )),
+                    ],
+                  ))),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            flex: 2,
+            child: CardTemplateSimple(
+                baseHeight: 400,
+                baseWidth: 400,
+                child: Column(children: [
+                  Expanded(child: InteractivePieChart()),
+                  Center(
+                      child: Column(
+                    children: _indicates,
+                  ))
+                ])),
+          )
+        ],
+      ),
     );
   }
 }

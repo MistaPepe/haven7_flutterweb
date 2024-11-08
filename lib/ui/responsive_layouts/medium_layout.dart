@@ -35,9 +35,9 @@ class _MediumLayoutState extends State<MediumLayout> {
       onPressed: () {
         //butu
         setState(() {
-          (MediaQuery.of(context).size.width < 950) ? 
-          _scaffoldKey.currentState?.openDrawer() : 
-          DrawerRouter.isDrawerOpen = !DrawerRouter.isDrawerOpen;
+          (MediaQuery.of(context).size.width < 950)
+              ? _scaffoldKey.currentState?.openDrawer()
+              : DrawerRouter.isDrawerOpen = !DrawerRouter.isDrawerOpen;
         });
       },
     );
@@ -45,26 +45,25 @@ class _MediumLayoutState extends State<MediumLayout> {
     return Scaffold(
       key: _scaffoldKey,
       drawer: const CustomConcealingDrawer(),
-
       body: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 28, 41, 158),
-                  Color.fromARGB(255, 0, 49, 212),
-                  Color.fromARGB(255, 26, 74, 233),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-              ),
-            ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 28, 41, 158),
+              Color.fromARGB(255, 0, 49, 212),
+              Color.fromARGB(255, 26, 74, 233),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Center(
           child: Row(
             children: [
               //Drawer Widget
               // ignore: prefer_const_constructors
               CustomAnimatedDrawer(),
-        
+
               //Body Widget
               Expanded(
                 child: Container(
@@ -85,9 +84,10 @@ class _MediumLayoutState extends State<MediumLayout> {
                           children: [
                             menuButton,
                             //appbar widget
-                            Expanded(child: Align(
-                              alignment: Alignment.centerRight,
-                              child: menuButton)),
+                            Expanded(
+                                child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: menuButton)),
                           ],
                         ),
 
@@ -116,14 +116,14 @@ class _DashboardMediumState extends State<DashboardMedium> {
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
-    behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-      child: Column(
+      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+      child: ListView(
         children: [
           const CardStatisticsWrapper(),
-          Flexible(child: Row(
+          Flexible(
+              child: Row(
             children: [
               Flexible(child: GraphOverallSales()),
-    
             ],
           ))
         ],

@@ -27,6 +27,7 @@ class AppColors {
   static const Color contentColorCyan = Color(0xFF50E4FF);
 }
 
+//line graph with goal in red line, or average
 class LineGraphAverage extends StatefulWidget {
   const LineGraphAverage({super.key});
 
@@ -35,10 +36,39 @@ class LineGraphAverage extends StatefulWidget {
 }
 
 class _LineGraphAverageState extends State<LineGraphAverage> {
+  var spots = List.generate(
+    30,
+    (index) {
+      return FlSpot(index.toDouble(), 1000 + (index * 20));
+    },
+  );
+
   @override
   Widget build(BuildContext context) {
     return LineChart(
       LineChartData(
+        lineTouchData: LineTouchData(
+          enabled: true,
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipColor: (touchedSpot) => const Color.fromARGB(255, 28, 41, 158),
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((touchedSpot) {
+                // Access the value and add custom content
+                final value = touchedSpot.y;
+                final index = touchedSpot.spotIndex;
+
+                // Customize the tooltip content here
+                return LineTooltipItem(
+                  'Index: $index\nValue: $value\nAdditional info here',
+                  TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }).toList();
+            },
+          ),
+        ),
         maxY: 4000,
         minY: 0,
         gridData: FlGridData(
@@ -49,17 +79,17 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
           getDrawingHorizontalLine: (value) {
             if (value == 2000) {
               // Draw a thicker line at 2000
-              return FlLine(color: Colors.red, strokeWidth: 2);
+              return const FlLine(color: Colors.red, strokeWidth: 2);
             }
-            return FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1);
+            return const FlLine(color: Colors.transparent);
           },
         ),
         titlesData: FlTitlesData(
           show: true,
-          topTitles: AxisTitles(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(
@@ -68,21 +98,22 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
               interval: 1, // Show title for each day
               getTitlesWidget: (value, meta) {
                 return Text(
-                  'Day ${value.toInt() + 1}', // Customize this as needed
-                  style: TextStyle(color: Colors.black, fontSize: 10),
+                  'Day ${value.toInt() + 1}',
+                  style: const TextStyle(color: Colors.black, fontSize: 10),
                 );
               },
             ),
           ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
+              minIncluded: false,
               reservedSize: 50,
               showTitles: true,
               interval: 1000, // Show title for every 500 units on the left
               getTitlesWidget: (value, meta) {
                 return Text(
                   '${value.toInt()}',
-                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  style: const TextStyle(color: Colors.black, fontSize: 15),
                 );
               },
             ),
@@ -91,13 +122,7 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
         borderData: FlBorderData(show: false),
         lineBarsData: [
           LineChartBarData(
-            spots: [
-              FlSpot(0, 1000),
-              FlSpot(1, 1000),
-              FlSpot(2, 1500),
-              FlSpot(3, 2100),
-              FlSpot(4, 2300),
-            ],
+            spots: spots,
             isCurved: true,
             color: Colors.green,
             barWidth: 3,
@@ -105,14 +130,14 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  Colors.green.withOpacity(0.3),
+                  Colors.green.withOpacity(0.5),
                   Colors.green.withOpacity(0),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
             ),
-            dotData: FlDotData(show: false),
+            dotData: const FlDotData(show: true),
           ),
         ],
       ),
@@ -120,7 +145,7 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
   }
 }
 
-///Samples
+///line chart only
 class Linechart1 extends StatelessWidget {
   const Linechart1({super.key});
 
@@ -154,8 +179,7 @@ class Linechart1 extends StatelessWidget {
             ),
           ),
           leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-            ),
+            sideTitles: SideTitles(),
           ),
         ),
         borderData: FlBorderData(show: false),
@@ -190,7 +214,7 @@ class Linechart1 extends StatelessWidget {
   }
 }
 
-
+//bar chart
 class SalesBarChart extends StatelessWidget {
   const SalesBarChart({super.key});
 
@@ -297,5 +321,126 @@ class SalesBarChart extends StatelessWidget {
         ],
       );
     }).toList();
+  }
+}
+
+/// piechart
+class InteractivePieChart extends StatefulWidget {
+  final Map<String, double>? slices;
+  const InteractivePieChart({super.key, this.slices});
+
+  @override
+  State<InteractivePieChart> createState() => _InteractivePieChartState();
+}
+
+class _InteractivePieChartState extends State<InteractivePieChart> {
+  int _selectedIndex = -1;
+
+  // Define data for each section
+  final List<double> _sectionValues = [
+    40,
+    30,
+    20,
+    10
+  ]; // Adjust values as needed
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: LayoutBuilder(builder: (context, constriant) {
+        return PieChart(
+          PieChartData(
+            sections: _getSections(),
+            centerSpaceRadius:
+                (constriant.maxWidth / 8 < 50) ? constriant.maxWidth / 8 : 50,
+            sectionsSpace: 2,
+            pieTouchData: PieTouchData(
+              touchCallback: (event, pieTouchResponse) {
+                setState(() {
+                  if (!event.isInterestedForInteractions ||
+                      pieTouchResponse == null ||
+                      pieTouchResponse.touchedSection == null) {
+                    _selectedIndex = -1;
+                    return;
+                  }
+                  _selectedIndex =
+                      pieTouchResponse.touchedSection!.touchedSectionIndex;
+                });
+              },
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  List<PieChartSectionData> _getSections() {
+    final total = _sectionValues
+        .reduce((a, b) => a + b); // Calculate total to get percentage
+
+    return List.generate(_sectionValues.length, (index) {
+      final isSelected = index == _selectedIndex;
+      final double radius =
+          isSelected ? 60 : 50; // Enlarge radius when selected
+      final double fontSize = isSelected ? 18 : 14;
+      final color =
+          [Colors.blue, Colors.green, Colors.orange, Colors.red][index];
+      final percentage =
+          (_sectionValues[index] / total * 100).toStringAsFixed(1);
+
+      return PieChartSectionData(
+        value: _sectionValues[index],
+        color: color,
+        title: (_sectionValues[index] / total * 100 > 9) ? '$percentage%' : "",
+        titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: Colors.white),
+        radius: radius,
+      );
+    });
+  }
+}
+
+class Indicator extends StatelessWidget {
+  const Indicator({
+    super.key,
+    required this.color,
+    required this.text,
+    required this.isSquare,
+    this.size = 16,
+    this.textColor,
+  });
+  final Color color;
+  final String text;
+  final bool isSquare;
+  final double size;
+  final Color? textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
+            color: color,
+          ),
+        ),
+        const SizedBox(
+          width: 4,
+        ),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        )
+      ],
+    );
   }
 }
