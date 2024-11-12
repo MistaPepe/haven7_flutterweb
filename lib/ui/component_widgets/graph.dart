@@ -124,20 +124,20 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
           LineChartBarData(
             spots: spots,
             isCurved: true,
-            color: Colors.green,
+            color: Colors.blueAccent,
             barWidth: 3,
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  Colors.green.withOpacity(0.5),
-                  Colors.green.withOpacity(0),
+                  const Color.fromARGB(255, 28, 240, 255).withOpacity(0.8),
+                  const Color.fromARGB(255, 67, 186, 255).withOpacity(0),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
             ),
-            dotData: const FlDotData(show: true),
+            dotData: const FlDotData(show: false,),
           ),
         ],
       ),
@@ -384,13 +384,20 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
           isSelected ? 60 : 50; // Enlarge radius when selected
       final double fontSize = isSelected ? 18 : 14;
       final color =
-          [Colors.blue, Colors.green, Colors.orange, Colors.red][index];
+          [Colors.blue[800], Colors.green[800], Colors.orange[800], Colors.red[800]][index];
+      final color2 =
+          [Colors.blue[600], Colors.green[600], Colors.orange[600], Colors.red[600]][index];
+      final color3 =
+          [const Color.fromARGB(255, 133, 30, 229), const Color.fromARGB(255, 80, 207, 54), const Color.fromARGB(255, 251, 163, 0), const Color.fromARGB(255, 223, 53, 229)][index];
+      
       final percentage =
           (_sectionValues[index] / total * 100).toStringAsFixed(1);
 
       return PieChartSectionData(
         value: _sectionValues[index],
-        color: color,
+        gradient: LinearGradient(
+
+          colors: [color!,color3,color2!]),
         title: (_sectionValues[index] / total * 100 > 9) ? '$percentage%' : "",
         titleStyle: TextStyle(
             fontSize: fontSize,

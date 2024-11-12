@@ -9,70 +9,82 @@ class DesktopLayout extends StatefulWidget {
   State<DesktopLayout> createState() => _DesktopLayoutState();
 }
 
-
 class _DesktopLayoutState extends State<DesktopLayout> {
-
-    Widget tabControl() {
+  Widget tabControl() {
     if (DrawerRouter.currentPage == 'Dashboard') {
-      return const DashboardDesktop();
+      return const DashboarLayout();
     } else {
       return const Placeholder();
     }
   }
- @override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 28, 41, 158),
-      body: Center(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 28, 41, 158),
+              Color.fromARGB(255, 0, 49, 212),
+              Color.fromARGB(255, 26, 74, 233),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Row(
           children: [
             //Drawer Widget, tho it is in constant open state, so i guess it just a router not a drawer
 
-             const CustomAnimatedDrawer(),
+            const CustomAnimatedDrawer(),
 
             //Body Widget
-             Expanded(
-              child: Container(
-                  margin:const EdgeInsets.fromLTRB(0, 15, 10, 5),
-                decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 236, 236, 236),
-                    borderRadius: BorderRadius.all(
-                     Radius.circular(20)
-                    )),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      tabControl(),
-                    ],
+           Expanded(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(0, 15, 10, 5),
+                  decoration: const BoxDecoration(
+                      color: Color.fromARGB(237, 255, 255, 255),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        topLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      )),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //appbar or top body
+                        Row(
+                          children: [
+                            
+                            //appbar widget
+                            Expanded(
+                                child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: IconButton(icon: Icon(Icons.notifications_none,),
+                                    iconSize: 30,
+                                        onPressed: () {
+                                          
+                                        },))),
+                          ],
+                        ),
+
+                        Expanded(
+                          child: ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context)
+                                  .copyWith(scrollbars: false),
+                              child:
+                                  SingleChildScrollView(child: tabControl())),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }}
-
-  class DashboardDesktop extends StatelessWidget {
-  const DashboardDesktop({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return  Expanded(
-      child: ScrollConfiguration(
-      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child: Column(
-          children: [
-            const CardStatisticsWrapper(),
-            Flexible(child: Row(
-              children: [
-                Flexible(child: GraphOverallSales()),
-
-              ],
-            ))
           ],
         ),
       ),

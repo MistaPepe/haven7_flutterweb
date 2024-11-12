@@ -14,7 +14,7 @@ class _MediumLayoutState extends State<MediumLayout> {
 
   Widget tabControl() {
     if (DrawerRouter.currentPage == 'Dashboard') {
-      return const DashboardMedium();
+      return const DashboarLayout();
     } else {
       return const Placeholder();
     }
@@ -87,11 +87,21 @@ class _MediumLayoutState extends State<MediumLayout> {
                             Expanded(
                                 child: Align(
                                     alignment: Alignment.centerRight,
-                                    child: menuButton)),
+                                    child: IconButton(icon: Icon(Icons.notifications_none,),
+                                    iconSize: 30,
+                                        onPressed: () {
+                                          
+                                        },))),
                           ],
                         ),
 
-                        Expanded(child: tabControl())
+                        Expanded(
+                          child: ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context)
+                                  .copyWith(scrollbars: false),
+                              child:
+                                  SingleChildScrollView(child: tabControl())),
+                        )
                       ],
                     ),
                   ),
@@ -100,33 +110,6 @@ class _MediumLayoutState extends State<MediumLayout> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class DashboardMedium extends StatefulWidget {
-  const DashboardMedium({super.key});
-
-  @override
-  State<DashboardMedium> createState() => _DashboardMediumState();
-}
-
-class _DashboardMediumState extends State<DashboardMedium> {
-  @override
-  Widget build(BuildContext context) {
-    return ScrollConfiguration(
-      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-      child: ListView(
-        children: [
-          const CardStatisticsWrapper(),
-          Flexible(
-              child: Row(
-            children: [
-              Flexible(child: GraphOverallSales()),
-            ],
-          ))
-        ],
       ),
     );
   }

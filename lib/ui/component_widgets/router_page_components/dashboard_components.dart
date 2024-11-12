@@ -3,6 +3,57 @@ import 'package:flutter/material.dart';
 
 import '../components.dart';
 
+class DashboarLayout extends StatefulWidget {
+  const DashboarLayout({super.key});
+
+  @override
+  State<DashboarLayout> createState() => _DashboarLayoutState();
+}
+
+class _DashboarLayoutState extends State<DashboarLayout> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          const CardStatisticsWrapper(),
+          const SizedBox(
+            height: 20,
+          ),
+          LayoutBuilder(builder: (context, constraint) {
+            return (constraint.maxWidth > 1000)
+                ? Row(
+                    children: [
+                      const Expanded(flex: 5, child: GraphOverallSales()),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(flex: 2, child: TodayOverallPieChart())
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      GraphOverallSales(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TodayOverallPieChart()
+                    ],
+                  );
+          }),
+          const SizedBox(
+            height: 20,
+          ),
+          Flexible(child: UrgentCostumerOrder()),
+        ],
+      ),
+    );
+  }
+}
+
 //template for card widget showing earnings and more
 class UpperCardTemplate extends StatelessWidget {
   final int numbers;
@@ -29,7 +80,7 @@ class UpperCardTemplate extends StatelessWidget {
               Icon(
                 icon,
                 size: 40,
-                color: Colors.blue,
+                color: Colors.blue[800],
               ),
 
               // Title below the icon
@@ -84,12 +135,16 @@ class UpperCardTemplate extends StatelessWidget {
         Row(
           children: [
             const SizedBox(
-              width: 10,
+              width: 20,
             ),
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                    color: Colors.greenAccent,
+                    gradient: LinearGradient(colors: [
+                      Color.fromARGB(255, 141, 255, 145),
+                      Color.fromARGB(255, 216, 255, 107),
+                      Color.fromARGB(255, 141, 255, 145)
+                    ]),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(5),
                         topRight: Radius.circular(5))),
@@ -97,7 +152,7 @@ class UpperCardTemplate extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              width: 10,
+              width: 20,
             ),
           ],
         )
@@ -113,24 +168,19 @@ class CardStatisticsWrapper extends StatelessWidget {
   static const int _baseWidth = 280;
   static const int _baseHeight = 150;
 
-  static Expanded template(
+  static Widget template(
       IconData icon, String title, int numbers, int percentage) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(5),
-        child: CardTemplateBox(
-            haveShadow: true,
-            isCurved: true,
-            baseHeight: _baseHeight,
-            baseWidth: _baseWidth,
-            child: UpperCardTemplate(
-              icon: icon,
-              title: title,
-              numbers: numbers,
-              percentage: percentage,
-            )),
-      ),
-    );
+    return CardTemplateBox(
+        haveShadow: true,
+        isCurved: true,
+        baseHeight: _baseHeight,
+        baseWidth: _baseWidth,
+        child: UpperCardTemplate(
+          icon: icon,
+          title: title,
+          numbers: numbers,
+          percentage: percentage,
+        ));
   }
 
   static final List<Widget> _cardContent = [
@@ -154,24 +204,20 @@ class CardStatisticsWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
       buildWrap() {
-        if (constraint.maxWidth > 1070) {
-          return Row(
-            children: _cardContent,
-          );
-        } else {
-          return SizedBox(
-            child: Column(
-              children: [
-                Row(
-                  children: [_cardContent[0], _cardContent[1]],
-                ),
-                Row(
-                  children: [_cardContent[2], _cardContent[3]],
-                )
-              ],
-            ),
-          );
-        }
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount:
+                (constraint.maxWidth > 1000) ? 4 : 2, // Number of columns
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            mainAxisExtent: 150, // Fixed height for each grid item
+          ),
+          itemCount: 4, // Number of items
+          itemBuilder: (context, index) {
+            return _cardContent[index];
+          },
+          shrinkWrap: true,
+        );
       }
 
       return buildWrap();
@@ -200,22 +246,8 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
     'Option 4'
   ];
 
-  static List<Color> colorIndicator = [
-    Colors.green,
-    Colors.orangeAccent,
-    Colors.redAccent,
-    Colors.blueAccent,
-  ];
-
-  final _indicates = List.generate(4, (index) {
-    return SizedBox(
-        width: 100,
-        child: Indicator(
-            color: colorIndicator[index], text: 'butu', isSquare: true));
-  });
   @override
   Widget build(BuildContext context) {
-    
     var optionButton = DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         icon: Icon(
@@ -229,7 +261,8 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
             value: value,
             child: Text(
               value,
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           );
         }).toList(),
@@ -245,50 +278,109 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
       ),
     );
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
-      child: Row(
+    return CardTemplateSimple(
+      baseHeight: 400,
+      baseWidth: 400,
+      child: Column(
         children: [
-          Expanded(
-              flex: 5,
-              child: CardTemplateSimple(
-                  baseHeight: 400,
-                  baseWidth: 400,
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 15,top: 5),
-                        height: 40,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: optionButton,
-                        ),
-                      ),
-                      Expanded(
-                          child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: const LineGraphAverage(),
-                      )),
-                    ],
-                  ))),
-          const SizedBox(
-            width: 10,
+          Container(
+            margin: EdgeInsets.only(right: 15, top: 5),
+            height: 40,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: optionButton,
+            ),
           ),
           Expanded(
-            flex: 2,
-            child: CardTemplateSimple(
-                baseHeight: 400,
-                baseWidth: 400,
-                child: Column(children: [
-                  Expanded(child: InteractivePieChart()),
-                  Center(
-                      child: Column(
-                    children: _indicates,
-                  ))
-                ])),
-          )
+              child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: const LineGraphAverage(),
+          )),
         ],
       ),
     );
   }
+}
+
+class TodayOverallPieChart extends StatelessWidget {
+  TodayOverallPieChart({super.key});
+
+  static List<Color> colorIndicator = [
+    Colors.green,
+    Colors.orangeAccent,
+    Colors.redAccent,
+    Colors.blueAccent,
+  ];
+
+  final _indicates = List.generate(4, (index) {
+    return SizedBox(
+        width: 100,
+        child: Indicator(
+            color: colorIndicator[index], text: 'butu', isSquare: true));
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CardTemplateBox(
+        useBackgroundStack: true,
+        baseHeight: 400,
+        baseWidth: 400,
+        child: Column(children: [
+          Flexible(child: const InteractivePieChart()),
+          ..._indicates
+        ]));
+  }
+}
+
+class UrgentCostumerOrder extends StatelessWidget {
+  final List<CustomerUrgentDetails>? customerList;
+  const UrgentCostumerOrder({super.key, this.customerList});
+
+  List<CustomerUrgentDetails> get _getCustomerList =>
+      customerList ??
+      [
+        const CustomerUrgentDetails(
+            "No urgent order, Everything is in ORDER HE!",
+            Icons.emoji_people,
+            1)
+      ];
+
+  Widget layoutList() {
+    return ListView.builder(
+      padding: EdgeInsets.all(20),
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Row(
+          children: [
+            SizedBox.square(
+              dimension: 40,
+              child: Icon(_getCustomerList[index].icon),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(child: Text(_getCustomerList[index].name)),
+            SizedBox.square(
+              dimension: 40,
+              child:
+                  IconButton(onPressed: () {}, icon: Icon(Icons.chevron_right)),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CardTemplateSimple(
+        baseHeight: 400, baseWidth: 400, child: layoutList());
+  }
+}
+
+class CustomerUrgentDetails {
+  final String name;
+  final IconData icon;
+  final int time;
+  const CustomerUrgentDetails(this.name, this.icon, this.time);
 }

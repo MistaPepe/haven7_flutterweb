@@ -15,9 +15,9 @@ enum AdminDrawer {
     router: '/',
     icon: Icons.home,
   ),
-  portfolio(
-    name: 'Portfolio',
-    router: '/portfolio',
+  statistics(
+    name: 'Statistics',
+    router: '/statistics',
     icon: Icons.leaderboard,
   ),
   products(name: 'Products', router: '/products', icon: Icons.inventory),

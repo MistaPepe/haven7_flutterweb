@@ -23,8 +23,8 @@ class _MobileLayoutState extends State<MobileLayout> {
         color: Color.fromARGB(255, 236, 236, 236),
         child: ListView(
           children: [
-           CardStatisticsWrapper(),
-            Text('butu'),
+           DashboarLayout(),
+
           ],
         ),
       ),
