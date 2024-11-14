@@ -1,5 +1,6 @@
-import 'package:fl_chart/fl_chart.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../components.dart';
 
@@ -30,24 +31,30 @@ class _DashboarLayoutState extends State<DashboarLayout> {
                       const SizedBox(
                         width: 20,
                       ),
-                      Expanded(flex: 2, child: TodayOverallPieChart())
+                      Expanded(
+                          flex: 2,
+                          child: UrgentCostumerOrder(
+                            customerList: listOfCustomerurgent,
+                          ))
                     ],
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      GraphOverallSales(),
+                      const GraphOverallSales(),
                       const SizedBox(
                         height: 20,
                       ),
-                      TodayOverallPieChart()
+                      UrgentCostumerOrder(
+                        customerList: listOfCustomerurgent,
+                      )
                     ],
                   );
           }),
           const SizedBox(
             height: 20,
           ),
-          Flexible(child: UrgentCostumerOrder()),
+          Flexible(child: TodayOverallPieChart()),
         ],
       ),
     );
@@ -86,7 +93,7 @@ class UpperCardTemplate extends StatelessWidget {
               // Title below the icon
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -105,7 +112,7 @@ class UpperCardTemplate extends StatelessWidget {
                 flex: 8,
                 child: Text(
                   '$numbers',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.w900,
                     color: Colors.black,
@@ -120,7 +127,7 @@ class UpperCardTemplate extends StatelessWidget {
                   children: [
                     Text(
                       '+ $percentage%',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         color: Colors.green,
                       ),
@@ -225,7 +232,7 @@ class CardStatisticsWrapper extends StatelessWidget {
   }
 }
 
-/// Graph of overall sales
+/// Graph of overall sales- by days, months etc..
 
 class GraphOverallSales extends StatefulWidget {
   const GraphOverallSales({super.key});
@@ -236,21 +243,24 @@ class GraphOverallSales extends StatefulWidget {
 
 class _GraphOverallSalesState extends State<GraphOverallSales> {
   // Initial selected value
-  static String selectedValue = 'Option 1';
+  static String selectedValue = '7 Days';
 
   // List of options
   static List<String> dropdownOptions = [
-    'Option 1',
-    'Option 2',
-    'Option 3',
-    'Option 4'
+    '7 Days',
+    '15 Days',
+    '30 days',
+    '3 Months',
+    '6 Months',
+    'Year',
+    'Overall'
   ];
 
   @override
   Widget build(BuildContext context) {
     var optionButton = DropdownButtonHideUnderline(
       child: DropdownButton<String>(
-        icon: Icon(
+        icon: const Icon(
           size: 30,
           Icons.more_vert,
           color: Colors.black,
@@ -261,8 +271,8 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
             value: value,
             child: Text(
               value,
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
           );
         }).toList(),
@@ -272,29 +282,48 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
           });
         },
         dropdownColor: Colors.blueGrey.shade700, // Background color of dropdown
-        style: TextStyle(color: Colors.black), // Color for selected item text
+        style: const TextStyle(
+            color: Colors.black), // Color for selected item text
         borderRadius: BorderRadius.circular(12), // Rounded corners for dropdown
-        menuMaxHeight: 200, // Limit the max height if there are many options
+        menuMaxHeight: 225, // Limit the max height if there are many options
       ),
     );
 
     return CardTemplateSimple(
-      baseHeight: 400,
+      baseHeight: 430,
       baseWidth: 400,
       child: Column(
         children: [
-          Container(
-            margin: EdgeInsets.only(right: 15, top: 5),
-            height: 40,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: optionButton,
-            ),
+          Row(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(left: 50, top: 10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Sales for $selectedValue',
+                    style: GoogleFonts.lato(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black12.withOpacity(0.8)),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.only(right: 15, top: 10),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: optionButton,
+                  ),
+                ),
+              ),
+            ],
           ),
-          Expanded(
+          const Expanded(
               child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: const LineGraphAverage(),
+            padding: EdgeInsets.all(20),
+            child: LineGraphAverage(),
           )),
         ],
       ),
@@ -305,82 +334,281 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
 class TodayOverallPieChart extends StatelessWidget {
   TodayOverallPieChart({super.key});
 
-  static List<Color> colorIndicator = [
-    Colors.green,
-    Colors.orangeAccent,
-    Colors.redAccent,
-    Colors.blueAccent,
+  // Define categories and their subsets
+  final Map<String, List<String>> categoryData = {
+    "Expenses": ["Food", "Gas", "Production", "Employee Salary"],
+    "Profit": ["Pet Bottles", "Gallon", "Slim"],
+    "Debt": ["Unpaid Bills", "Loan", "Pending Salaries"],
+  };
+
+  // Define colors for main categories and subcategories
+  static const List<Color> mainColors = [
+    Colors.blueAccent, // Profit
+    Colors.redAccent,  // Debt
+    Colors.orangeAccent, // Expenses
   ];
 
-  final _indicates = List.generate(4, (index) {
-    return SizedBox(
-        width: 100,
-        child: Indicator(
-            color: colorIndicator[index], text: 'butu', isSquare: true));
-  });
+  static Map<String, List<Color>> subcategoryColors = {
+    "Expenses": [Colors.green, Colors.orange, Colors.purple, Colors.teal],
+    "Profit": [Colors.blue[400]!, Colors.blue[200]!, Colors.blue[100]!],
+    "Debt": [Colors.red[400]!, Colors.red[300]!, Colors.red[200]!],
+  };
 
   @override
   Widget build(BuildContext context) {
-    return CardTemplateBox(
-        useBackgroundStack: true,
-        baseHeight: 400,
-        baseWidth: 400,
-        child: Column(children: [
-          Flexible(child: const InteractivePieChart()),
-          ..._indicates
-        ]));
+    return CardTemplateSimple(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Pie Chart Section
+          SizedBox(
+            height: 450,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: InteractivePieChart(), // Replace with your pie chart widget
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: categoryData.entries
+                        .map((entry) => _buildCategory(entry))
+                        .toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Builds a category indicator with subcategories
+  Widget _buildCategory(MapEntry<String, List<String>> entry) {
+    final int categoryIndex = categoryData.keys.toList().indexOf(entry.key);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Main Category Indicator
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Indicator(
+            color: mainColors[categoryIndex],
+            text: entry.key,
+            isSquare: true,
+          ),
+        ),
+        // Subcategories
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: List.generate(
+            entry.value.length,
+            (subIndex) => Indicator(
+              color: subcategoryColors[entry.key]![subIndex],
+              text: entry.value[subIndex],
+              isSquare: true,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16), // Spacing between categories
+      ],
+    );
   }
 }
 
-class UrgentCostumerOrder extends StatelessWidget {
+///-------------------------------------------------------------------------------
+
+///-------------------------------------------------------------------------------
+//generate a list of list of int for random ARGB color for the container of icons
+List<List<int>> colorList = List.generate(5, (index) {
+  List<int> placeholder = [];
+  for (int i = 0; i < 4; i++) {
+    var firstIndex = (i == 0) ? 200 : 75;
+    placeholder.add(Random().nextInt(255 - firstIndex) + firstIndex);
+  }
+
+  return placeholder;
+});
+
+class UrgentCostumerOrder extends StatefulWidget {
   final List<CustomerUrgentDetails>? customerList;
   const UrgentCostumerOrder({super.key, this.customerList});
 
-  List<CustomerUrgentDetails> get _getCustomerList =>
-      customerList ??
-      [
-        const CustomerUrgentDetails(
-            "No urgent order, Everything is in ORDER HE!",
-            Icons.emoji_people,
-            1)
-      ];
+  @override
+  State<UrgentCostumerOrder> createState() => _UrgentCostumerOrderState();
+}
 
+class _UrgentCostumerOrderState extends State<UrgentCostumerOrder> {
+  bool _isHovering = false;
+  int _indexHover = -1;
+
+  List<CustomerUrgentDetails> get _getCustomerList =>
+      (widget.customerList?.isEmpty ?? true)
+          ? [
+              const CustomerUrgentDetails(
+                "No urgent order, Everything is in ORDER HE!",
+                Icon(Icons.person),
+                1,
+              ),
+            ]
+          : widget.customerList!;
+
+//builder for each row of order, - icons, name and the arrow button build here
   Widget layoutList() {
-    return ListView.builder(
-      padding: EdgeInsets.all(20),
-      physics: NeverScrollableScrollPhysics(),
+    return ListView.separated(
+      separatorBuilder: (context, index) {
+        return const SizedBox(
+          height: 20,
+        );
+      },
+      itemCount: min(_getCustomerList.length, 5),
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        return Row(
-          children: [
-            SizedBox.square(
-              dimension: 40,
-              child: Icon(_getCustomerList[index].icon),
+        List<int> argbList = colorList[index];
+
+        double itemScale = 1 + (20 / MediaQuery.of(context).size.width);
+        return MouseRegion(
+          onEnter: (_) => setState(() {
+            _isHovering = true;
+            _indexHover = index;
+          }),
+          onExit: (_) => setState(() {
+            _isHovering = false;
+            _indexHover = -1;
+          }),
+          child: GestureDetector(
+            onTap: () {
+              print(index); // add function
+            },
+            child: Transform.scale(
+              scale: (_isHovering && index == _indexHover) ? itemScale : 1.0,
+              child: Row(
+                children: [
+                  CardTemplateSimple(
+                      baseHeight: 40,
+                      baseWidth: 40,
+                      color: Color.fromARGB(
+                          argbList[0], argbList[1], argbList[2], argbList[3]),
+                      child: _getCustomerList[index].icon),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: Text(
+                    _getCustomerList[index].name,
+                    style: const TextStyle(fontSize: 16),
+                  )),
+                  SizedBox.square(
+                    dimension: 40,
+                    child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.chevron_right)),
+                  )
+                ],
+              ),
             ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(child: Text(_getCustomerList[index].name)),
-            SizedBox.square(
-              dimension: 40,
-              child:
-                  IconButton(onPressed: () {}, icon: Icon(Icons.chevron_right)),
-            )
-          ],
+          ),
         );
       },
     );
   }
 
+  Widget containerBuilder(Widget child) {
+    return CardTemplateBox(
+        shouldEnlarge: false,
+        useBackgroundStack: true,
+        baseHeight: 430,
+        baseWidth: 400,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white,
+                  Colors.white.withOpacity(0.5),
+                ]),
+          ),
+          padding: const EdgeInsets.only(top: 10, left: 10, bottom: 20),
+          margin: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Text(
+                'Pending Order',
+                style: GoogleFonts.lato(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black12.withOpacity(0.8)),
+              ),
+              Expanded(child: child),
+              (_getCustomerList.length > 5)
+                  ? Center(
+                      child: TextButton(
+                          onPressed: () {}, child: Text('More on Customer')),
+                    )
+                  : SizedBox()
+            ],
+          ),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CardTemplateSimple(
-        baseHeight: 400, baseWidth: 400, child: layoutList());
+    if (widget.customerList!.isEmpty) {
+      return containerBuilder(Align(
+        alignment: Alignment.center,
+        child: Text(
+          _getCustomerList[0].name,
+          style: GoogleFonts.lato(
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+              color: Colors.black12.withOpacity(0.8)),
+        ),
+      ));
+    } else {
+      return containerBuilder(layoutList());
+    }
   }
 }
 
+var customer1 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
+var customer5 = const CustomerUrgentDetails('butu', Icon(Icons.person), 1);
+var customer6 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
+var customer2 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
+var customer3 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
+
+List<CustomerUrgentDetails> listOfCustomerurgent = [
+  customer1,
+   customer5,
+    customer5,
+  customer2,
+  customer3,
+  customer5,
+  customer6,
+];
+
 class CustomerUrgentDetails {
   final String name;
-  final IconData icon;
+  final Widget icon;
   final int time;
   const CustomerUrgentDetails(this.name, this.icon, this.time);
+}
+///-------------------------------------------------------------------------------
+///
+///-----------------------------------------------------------------------------
+
+class CampaignBanner extends StatelessWidget {
+  const CampaignBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
 }

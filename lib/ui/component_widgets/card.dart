@@ -11,6 +11,7 @@ class CardTemplateBox extends StatefulWidget {
   final bool isCurved;
   final bool haveShadow;
   final bool useBackgroundStack;
+  final bool shouldEnlarge;
   const CardTemplateBox(
       {super.key,
       required this.baseWidth,
@@ -19,7 +20,8 @@ class CardTemplateBox extends StatefulWidget {
       this.color = Colors.white,
       this.isCurved = true,
       this.haveShadow = false,
-      this.useBackgroundStack = false});
+      this.useBackgroundStack = false,
+      this.shouldEnlarge = true});
 
   @override
   State<CardTemplateBox> createState() => _CardTemplateBoxState();
@@ -33,7 +35,7 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
       onEnter: (_) => setState(() => _isHovering = true),
       onExit: (_) => setState(() => _isHovering = false),
       child: Transform.scale(
-        scale: _isHovering ? 1.015 : 1.0,
+        scale: (_isHovering && widget.shouldEnlarge)? 1.015 : 1.0,
         child: Container(
           decoration: BoxDecoration(
             color: (widget.useBackgroundStack!)
@@ -76,14 +78,14 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
             height: double.infinity,
             width: double.infinity,
             child: ClipPath(
-              // Custom clipper to define the wavy shape
+             // clipper: ,// Custom clipper to define the wavy shape
               child: Container(
                decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color.fromARGB(255, 28, 41, 158),
-              Color.fromARGB(255, 0, 49, 212),
-              Color.fromARGB(255, 26, 74, 233),
+              Color.fromARGB(137, 0, 98, 245),
+              Color.fromARGB(83, 67, 70, 255),
+              Color.fromARGB(181, 39, 53, 255),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
@@ -137,7 +139,7 @@ class CardTemplateSimple extends StatelessWidget {
   final bool haveShadow;
   final int? baseWidth;
   final int? baseHeight;
-  final Color? color;
+  final Color color;
   final Widget child;
   const CardTemplateSimple(
       {super.key,
@@ -154,7 +156,7 @@ class CardTemplateSimple extends StatelessWidget {
       height: (baseHeight != null) ? baseHeight?.toDouble() : null,
       width: (baseWidth != null) ? baseWidth?.toDouble() : null,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: color,
         borderRadius: (isCurved) ? BorderRadius.circular(10) : null,
         boxShadow: (haveShadow)
             ? [

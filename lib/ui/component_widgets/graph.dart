@@ -326,83 +326,169 @@ class SalesBarChart extends StatelessWidget {
 
 /// piechart
 class InteractivePieChart extends StatefulWidget {
-  final Map<String, double>? slices;
-  const InteractivePieChart({super.key, this.slices});
+  const InteractivePieChart({super.key});
+
 
   @override
   State<InteractivePieChart> createState() => _InteractivePieChartState();
 }
 
 class _InteractivePieChartState extends State<InteractivePieChart> {
-  int _selectedIndex = -1;
+  int _hoveredIndex = -1; // Track the hovered slice index
+  String _selectedCategory = 'main'; // Track current category
 
-  // Define data for each section
-  final List<double> _sectionValues = [
-    40,
-    30,
-    20,
-    10
-  ]; // Adjust values as needed
+  // Data for main categories
+  final Map<String, double> _mainData = {
+    'Expenses': 70,
+    'Profit': 30,
+  };
+
+  // Subsets for Expenses
+  final Map<String, double> _expensesData = {
+    'Employee Salary': 40,
+    'Production': 20,
+    'Utility': 10,
+  };
+
+  // Subsets for Profit
+  final Map<String, double> _profitData = {
+    'Pet Bottles': 40,
+    'Slim': 30,
+    'Gallons': 20,
+    'Unpaid/Debt': 10,
+  };
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: LayoutBuilder(builder: (context, constriant) {
-        return PieChart(
-          PieChartData(
-            sections: _getSections(),
-            centerSpaceRadius:
-                (constriant.maxWidth / 8 < 50) ? constriant.maxWidth / 8 : 50,
-            sectionsSpace: 2,
-            pieTouchData: PieTouchData(
-              touchCallback: (event, pieTouchResponse) {
-                setState(() {
-                  if (!event.isInterestedForInteractions ||
-                      pieTouchResponse == null ||
-                      pieTouchResponse.touchedSection == null) {
-                    _selectedIndex = -1;
-                    return;
-                  }
-                  _selectedIndex =
-                      pieTouchResponse.touchedSection!.touchedSectionIndex;
-                });
-              },
+    // Determine which data to display based on category
+    Map<String, double> chartData;
+    if (_selectedCategory == 'expenses') {
+      chartData = _expensesData;
+    } else if (_selectedCategory == 'profit') {
+      chartData = _profitData;
+    } else {
+      chartData = _mainData;
+    }
+
+    final total = chartData.values.reduce((a, b) => a + b);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Pie Chart
+        SizedBox(
+          height: 300,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              PieChart(
+                PieChartData(
+                  sections: _getSections(chartData),
+                  centerSpaceRadius: 50,
+                  sectionsSpace: 2,
+                  pieTouchData: PieTouchData(
+                    touchCallback: (event, pieTouchResponse) {
+                      setState(() {
+                        if (!event.isInterestedForInteractions ||
+                            pieTouchResponse == null ||
+                            pieTouchResponse.touchedSection == null) {
+                          _hoveredIndex = -1;
+                          return;
+                        }
+                        _hoveredIndex =
+                            pieTouchResponse.touchedSection!.touchedSectionIndex;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Hovered Slice Info
+        if (_hoveredIndex != -1)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              '${chartData.keys.elementAt(_hoveredIndex)}: ${chartData.values.elementAt(_hoveredIndex)}',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              'Total: $total',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-        );
-      }),
+
+        // Buttons
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_selectedCategory == 'main') ...[
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedCategory = 'expenses';
+                  });
+                },
+                child: const Text('Expenses'),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedCategory = 'profit';
+                  });
+                },
+                child: const Text('Profit'),
+              ),
+            ] else ...[
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedCategory = 'main';
+                  });
+                },
+                child: const Text('Back'),
+              ),
+            ],
+          ],
+        ),
+      ],
     );
   }
 
-  List<PieChartSectionData> _getSections() {
-    final total = _sectionValues
-        .reduce((a, b) => a + b); // Calculate total to get percentage
+  // Generate pie chart sections dynamically
+  List<PieChartSectionData> _getSections(Map<String, double> data) {
+    final total = data.values.reduce((a, b) => a + b);
 
-    return List.generate(_sectionValues.length, (index) {
-      final isSelected = index == _selectedIndex;
-      final double radius =
-          isSelected ? 60 : 50; // Enlarge radius when selected
-      final double fontSize = isSelected ? 18 : 14;
-      final color =
-          [Colors.blue[800], Colors.green[800], Colors.orange[800], Colors.red[800]][index];
-      final color2 =
-          [Colors.blue[600], Colors.green[600], Colors.orange[600], Colors.red[600]][index];
-      final color3 =
-          [const Color.fromARGB(255, 133, 30, 229), const Color.fromARGB(255, 80, 207, 54), const Color.fromARGB(255, 251, 163, 0), const Color.fromARGB(255, 223, 53, 229)][index];
-      
-      final percentage =
-          (_sectionValues[index] / total * 100).toStringAsFixed(1);
+    return List.generate(data.length, (index) {
+      final isHovered = index == _hoveredIndex;
+      final double radius = isHovered ? 70 : 50;
+      final double fontSize = isHovered ? 18 : 14;
+      final color = Colors.primaries[index % Colors.primaries.length];
 
       return PieChartSectionData(
-        value: _sectionValues[index],
-        gradient: LinearGradient(
-
-          colors: [color!,color3,color2!]),
-        title: (_sectionValues[index] / total * 100 > 9) ? '$percentage%' : "",
+        value: data.values.elementAt(index),
+        color: color,
+        title: '${(data.values.elementAt(index) / total * 100).toStringAsFixed(1)}%',
         titleStyle: TextStyle(
-            fontSize: fontSize,
-            fontWeight: FontWeight.bold,
-            color: Colors.white),
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
         radius: radius,
       );
     });
