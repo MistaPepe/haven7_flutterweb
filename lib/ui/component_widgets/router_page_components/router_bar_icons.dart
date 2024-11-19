@@ -196,7 +196,6 @@ class CustomAnimatedDrawer extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         width: DrawerRouter.isDrawerOpen ? 250 : 75,
         height: double.infinity,
-
         child: CustomDrawerBuilder());
   }
 }

@@ -18,7 +18,7 @@ class _MobileLayoutState extends State<MobileLayout> {
       appBar: AppBar(
         backgroundColor: Colors.white,
       ),
-      drawer: CustomConcealingDrawer(),
+      drawer:const CustomConcealingDrawer(),
       body: Container(
         color: Color.fromARGB(255, 236, 236, 236),
         child: ListView(

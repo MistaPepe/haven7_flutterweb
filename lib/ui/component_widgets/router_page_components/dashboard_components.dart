@@ -14,50 +14,54 @@ class DashboarLayout extends StatefulWidget {
 class _DashboarLayoutState extends State<DashboarLayout> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          const CardStatisticsWrapper(),
-          const SizedBox(
-            height: 20,
-          ),
-          LayoutBuilder(builder: (context, constraint) {
-            return (constraint.maxWidth > 1000)
-                ? Row(
-                    children: [
-                      const Expanded(flex: 5, child: GraphOverallSales()),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                          flex: 2,
-                          child: UrgentCostumerOrder(
-                            customerList: listOfCustomerurgent,
-                          ))
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const GraphOverallSales(),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      UrgentCostumerOrder(
-                        customerList: listOfCustomerurgent,
-                      )
-                    ],
-                  );
-          }),
-          const SizedBox(
-            height: 20,
-          ),
-          Flexible(child: TodayOverallPieChart()),
-        ],
-      ),
-    );
+    return Container(
+      margin: const EdgeInsets.all(20),
+        height: MediaQuery.of(context).size.height, // 60% of screen height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        clipBehavior: Clip.antiAlias, // Ensures clipping is active
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const CardStatisticsWrapper(),
+            const SizedBox(
+              height: 20,
+            ),
+            LayoutBuilder(builder: (context, constraint) {
+              return (constraint.maxWidth > 1000)
+                  ? Row(
+                      children: [
+                        const Expanded(flex: 5, child: GraphOverallSales()),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Expanded(
+                            flex: 2,
+                            child: UrgentCostumerOrder(
+                              customerList: listOfCustomerurgent,
+                            ))
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const GraphOverallSales(),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        UrgentCostumerOrder(
+                          customerList: listOfCustomerurgent,
+                        )
+                      ],
+                    );
+            }),
+            const SizedBox(
+              height: 20,
+            ),
+            TodayOverallPieChart()
+          ],
+        ));
   }
 }
 
@@ -178,7 +182,7 @@ class CardStatisticsWrapper extends StatelessWidget {
   static Widget template(
       IconData icon, String title, int numbers, int percentage) {
     return CardTemplateBox(
-        haveShadow: true,
+        haveShadow: false,
         isCurved: true,
         baseHeight: _baseHeight,
         baseWidth: _baseWidth,
@@ -344,7 +348,7 @@ class TodayOverallPieChart extends StatelessWidget {
   // Define colors for main categories and subcategories
   static const List<Color> mainColors = [
     Colors.blueAccent, // Profit
-    Colors.redAccent,  // Debt
+    Colors.redAccent, // Debt
     Colors.orangeAccent, // Expenses
   ];
 
@@ -368,7 +372,8 @@ class TodayOverallPieChart extends StatelessWidget {
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(16),
-                    child: InteractivePieChart(), // Replace with your pie chart widget
+                    child:
+                        InteractivePieChart(), // Replace with your pie chart widget
                   ),
                 ),
                 Expanded(
@@ -426,15 +431,6 @@ class TodayOverallPieChart extends StatelessWidget {
 
 ///-------------------------------------------------------------------------------
 //generate a list of list of int for random ARGB color for the container of icons
-List<List<int>> colorList = List.generate(5, (index) {
-  List<int> placeholder = [];
-  for (int i = 0; i < 4; i++) {
-    var firstIndex = (i == 0) ? 200 : 75;
-    placeholder.add(Random().nextInt(255 - firstIndex) + firstIndex);
-  }
-
-  return placeholder;
-});
 
 class UrgentCostumerOrder extends StatefulWidget {
   final List<CustomerUrgentDetails>? customerList;
@@ -447,6 +443,16 @@ class UrgentCostumerOrder extends StatefulWidget {
 class _UrgentCostumerOrderState extends State<UrgentCostumerOrder> {
   bool _isHovering = false;
   int _indexHover = -1;
+
+  static List<List<int>> colorList = List.generate(5, (index) {
+    List<int> placeholder = [];
+    for (int i = 0; i < 4; i++) {
+      var firstIndex = (i == 0) ? 200 : 75;
+      placeholder.add(Random().nextInt(255 - firstIndex) + firstIndex);
+    }
+
+    return placeholder;
+  });
 
   List<CustomerUrgentDetails> get _getCustomerList =>
       (widget.customerList?.isEmpty ?? true)
@@ -586,8 +592,8 @@ var customer3 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
 
 List<CustomerUrgentDetails> listOfCustomerurgent = [
   customer1,
-   customer5,
-    customer5,
+  customer5,
+  customer5,
   customer2,
   customer3,
   customer5,
@@ -600,6 +606,7 @@ class CustomerUrgentDetails {
   final int time;
   const CustomerUrgentDetails(this.name, this.icon, this.time);
 }
+
 ///-------------------------------------------------------------------------------
 ///
 ///-----------------------------------------------------------------------------

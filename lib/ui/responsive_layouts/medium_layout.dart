@@ -22,26 +22,6 @@ class _MediumLayoutState extends State<MediumLayout> {
 
   @override
   Widget build(BuildContext context) {
-    var menuButton = IconButton(
-      icon: DrawerRouter.isDrawerOpen
-          ? const Icon(
-              Icons.close,
-              color: Colors.black,
-            )
-          : const Icon(
-              Icons.menu,
-              color: Colors.black,
-            ),
-      onPressed: () {
-        //butu
-        setState(() {
-          (MediaQuery.of(context).size.width < 950)
-              ? _scaffoldKey.currentState?.openDrawer()
-              : DrawerRouter.isDrawerOpen = !DrawerRouter.isDrawerOpen;
-        });
-      },
-    );
-
     return Scaffold(
       key: _scaffoldKey,
       drawer: const CustomConcealingDrawer(),
@@ -69,7 +49,7 @@ class _MediumLayoutState extends State<MediumLayout> {
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(0, 15, 0, 5),
                   decoration: const BoxDecoration(
-                      color: Color.fromARGB(237, 255, 255, 255),
+                      color: Color.fromARGB(221, 229, 249, 255),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(30),
                         topLeft: Radius.circular(30),
@@ -80,27 +60,17 @@ class _MediumLayoutState extends State<MediumLayout> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         //appbar or top body
-                        Row(
-                          children: [
-                            menuButton,
-                            //appbar widget
-                            Expanded(
-                                child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: IconButton(icon: Icon(Icons.notifications_none,),
-                                    iconSize: 30,
-                                        onPressed: () {
-                                          
-                                        },))),
-                          ],
-                        ),
+                        CustomAppBarButtons(
+                            menuFunction: () => setState(() {
+                                  CustomAppBarButtons.isContainer(
+                                      context, _scaffoldKey);
+                                })),
 
                         Expanded(
                           child: ScrollConfiguration(
                               behavior: ScrollConfiguration.of(context)
                                   .copyWith(scrollbars: false),
-                              child:
-                                  SingleChildScrollView(child: tabControl())),
+                              child: tabControl()),
                         )
                       ],
                     ),

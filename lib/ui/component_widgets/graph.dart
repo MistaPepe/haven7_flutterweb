@@ -93,16 +93,16 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
             sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: 1, // Show title for each day
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  'Day ${value.toInt() + 1}',
-                  style: const TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-            ),
+            // sideTitles: SideTitles(
+            //   showTitles: true,
+            //   interval: 1, // Show title for each day
+            //   getTitlesWidget: (value, meta) {
+            //     return Text(
+            //       'Day ${value.toInt() + 1}',
+            //       style: const TextStyle(color: Colors.black, fontSize: 10),
+            //     );
+            //   },
+            // ),
           ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(

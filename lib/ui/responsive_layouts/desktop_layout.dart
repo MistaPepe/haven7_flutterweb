@@ -41,50 +41,36 @@ class _DesktopLayoutState extends State<DesktopLayout> {
             const CustomAnimatedDrawer(),
 
             //Body Widget
-           Expanded(
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(0, 15, 10, 5),
-                  decoration: const BoxDecoration(
-                      color: Color.fromARGB(237, 255, 255, 255),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(30),
-                        topLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      )),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        //appbar or top body
-                        Row(
-                          children: [
-                            
-                            //appbar widget
-                            Expanded(
-                                child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: IconButton(icon: Icon(Icons.notifications_none,),
-                                    iconSize: 30,
-                                        onPressed: () {
-                                          
-                                        },))),
-                          ],
-                        ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(0, 15, 10, 5),
+                decoration: const BoxDecoration(
+                    color: Color.fromARGB(221, 229, 249, 255),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      topLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    )),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //appbar or top body
+                      const CustomAppBarButtons(hasMenuButton: false,),
 
-                        Expanded(
-                          child: ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context)
-                                  .copyWith(scrollbars: false),
-                              child:
-                                  SingleChildScrollView(child: tabControl())),
-                        )
-                      ],
-                    ),
+                      Expanded(
+                        child: ScrollConfiguration(
+                            behavior: ScrollConfiguration.of(context)
+                                .copyWith(scrollbars: false),
+                            child: tabControl()),
+                      )
+                    ],
                   ),
                 ),
               ),
+            ),
           ],
         ),
       ),
