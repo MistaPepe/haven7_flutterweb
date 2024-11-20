@@ -326,7 +326,8 @@ class SalesBarChart extends StatelessWidget {
 
 /// piechart
 class InteractivePieChart extends StatefulWidget {
-  const InteractivePieChart({super.key});
+  final Map<String, double> data;
+  const InteractivePieChart({super.key,required this.data});
 
 
   @override
@@ -335,42 +336,35 @@ class InteractivePieChart extends StatefulWidget {
 
 class _InteractivePieChartState extends State<InteractivePieChart> {
   int _hoveredIndex = -1; // Track the hovered slice index
-  String _selectedCategory = 'main'; // Track current category
 
-  // Data for main categories
-  final Map<String, double> _mainData = {
-    'Expenses': 70,
-    'Profit': 30,
-  };
+  // Generate pie chart sections dynamically
+  List<PieChartSectionData> _getSections(Map<String, double> data) {
 
-  // Subsets for Expenses
-  final Map<String, double> _expensesData = {
-    'Employee Salary': 40,
-    'Production': 20,
-    'Utility': 10,
-  };
+    return List.generate(data.length, (index) {
+      final isHovered = index == _hoveredIndex;
+      final double radius = isHovered ? 60 : 50;
+      final double fontSize = isHovered ? 18 : 14;
+      final color = Colors.primaries[index % Colors.primaries.length];
 
-  // Subsets for Profit
-  final Map<String, double> _profitData = {
-    'Pet Bottles': 40,
-    'Slim': 30,
-    'Gallons': 20,
-    'Unpaid/Debt': 10,
-  };
+      return PieChartSectionData(
+        value: data.values.elementAt(index),
+        color: color,
+
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        radius: radius,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Determine which data to display based on category
-    Map<String, double> chartData;
-    if (_selectedCategory == 'expenses') {
-      chartData = _expensesData;
-    } else if (_selectedCategory == 'profit') {
-      chartData = _profitData;
-    } else {
-      chartData = _mainData;
-    }
 
-    final total = chartData.values.reduce((a, b) => a + b);
+    final chartData = widget.data;
+    final total = chartData!.values.reduce((a, b) => a + b);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -431,67 +425,8 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
               ),
             ),
           ),
-
-        // Buttons
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_selectedCategory == 'main') ...[
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedCategory = 'expenses';
-                  });
-                },
-                child: const Text('Expenses'),
-              ),
-              const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedCategory = 'profit';
-                  });
-                },
-                child: const Text('Profit'),
-              ),
-            ] else ...[
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedCategory = 'main';
-                  });
-                },
-                child: const Text('Back'),
-              ),
-            ],
-          ],
-        ),
       ],
     );
-  }
-
-  // Generate pie chart sections dynamically
-  List<PieChartSectionData> _getSections(Map<String, double> data) {
-    final total = data.values.reduce((a, b) => a + b);
-
-    return List.generate(data.length, (index) {
-      final isHovered = index == _hoveredIndex;
-      final double radius = isHovered ? 70 : 50;
-      final double fontSize = isHovered ? 18 : 14;
-      final color = Colors.primaries[index % Colors.primaries.length];
-
-      return PieChartSectionData(
-        value: data.values.elementAt(index),
-        color: color,
-        title: '${(data.values.elementAt(index) / total * 100).toStringAsFixed(1)}%',
-        titleStyle: TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        radius: radius,
-      );
-    });
   }
 }
 

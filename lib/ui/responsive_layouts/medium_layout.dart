@@ -49,7 +49,7 @@ class _MediumLayoutState extends State<MediumLayout> {
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(0, 15, 0, 5),
                   decoration: const BoxDecoration(
-                      color: Color.fromARGB(221, 229, 249, 255),
+                      color: Color.fromARGB(232, 229, 249, 255),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(30),
                         topLeft: Radius.circular(30),

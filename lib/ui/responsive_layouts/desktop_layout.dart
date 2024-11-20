@@ -58,7 +58,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //appbar or top body
-                      const CustomAppBarButtons(hasMenuButton: false,),
+                      const CustomAppBarButtons(hasMenuButton: false),
 
                       Expanded(
                         child: ScrollConfiguration(

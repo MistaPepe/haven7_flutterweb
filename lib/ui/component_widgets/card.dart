@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
+
+
 
 //default template for card widget
 class CardTemplateBox extends StatefulWidget {

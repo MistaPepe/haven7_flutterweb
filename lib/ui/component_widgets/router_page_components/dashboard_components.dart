@@ -15,7 +15,7 @@ class _DashboarLayoutState extends State<DashboarLayout> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
         height: MediaQuery.of(context).size.height, // 60% of screen height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -360,6 +360,10 @@ class TodayOverallPieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, double> _mainData = {
+      'Expenses': 70,
+      'Profit': 30,
+    };
     return CardTemplateSimple(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -370,10 +374,22 @@ class TodayOverallPieChart extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child:
-                        InteractivePieChart(), // Replace with your pie chart widget
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        child: InteractivePieChart(
+                            data:
+                                _mainData), // Replace with your pie chart widget
+                      ),
+                      Flexible(
+                          child: CustomCallbackButton(
+                        text: 'asdasdasdasdasdasd',
+                        image: 'lib/src/crystalizebg.png',
+                        icon: const Icon(Icons.upload),
+                        onPressed: () {},
+                      )),
+                    ],
                   ),
                 ),
                 Expanded(
