@@ -345,16 +345,15 @@ class TodayOverallPieChart extends StatefulWidget {
 class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
   String selectedButton = 'Go back to Sales';
 
-  static const List<Color> mainColors = [
-    Colors.blueAccent, // Profit
-    Colors.redAccent, // Debt
-    Colors.orangeAccent, // Expenses
-  ];
-
   static Map<String, List<Color>> subcategoryColors = {
-    "Expenses": [Colors.green, Colors.orange, Colors.purple, Colors.teal],
-    "Profit": [Colors.blue[400]!, Colors.blue[200]!, Colors.blue[100]!],
-    "Debt": [Colors.red[400]!, Colors.red[300]!, Colors.red[200]!],
+    "Expenses": const [
+      Color(0xFFFFC1C1),
+      Color(0xFFFF8A80),
+      Color(0xFFFF5252),
+      Color(0xFFD32F2F)
+    ],
+    "Profit": const [Color(0xFFBBDEFB), Color(0xFF64B5F6), Color(0xFF0D47A1)],
+    "Debt": const [Color(0xFFC8E6C9), Color(0xFF43A047), Color(0xFF1B5E20)],
   };
   // Define categories and their subsets
   final Map<String, List<String>> categoryData = {
@@ -366,22 +365,26 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
   @override
   Widget build(BuildContext context) {
     final Map<String, double> mainData = {
-      'Expenses': 70,
-      'Profit': 30,
+      'Expenses': 20,
+      'Profit': 70,
+      'Debt': 10
     };
 
     var expenseIndicates = GraphIndicator()
-      ..title = mainData.keys.first
-      ..color = Colors.blueAccent
-      ..size = 12
-      ..subCategories = categoryData.values.first
+      ..title = (selectedButton == "Profit") ? "" : mainData.keys.first
+      ..color = (selectedButton == "Profit") ? null : Colors.redAccent
+      ..subCategories =
+          (selectedButton == "Expenses") ? categoryData.values.first : []
       ..build(context);
 
     var profitIndicates = GraphIndicator()
-      ..title = mainData.keys.last
-      ..subCategories = categoryData.entries
-          .firstWhere((entry) => entry.key == mainData.keys.last)
-          .value
+      ..title = (selectedButton == "Expenses") ? "" : mainData.keys.last
+      ..color = (selectedButton == "Expenses") ? null : Colors.pink
+      ..subCategories = (selectedButton == "Profit")
+          ? categoryData.entries
+              .firstWhere((entry) => entry.key == mainData.keys.last)
+              .value
+          : []
       ..build(context);
 
     buttons(String name) {
@@ -400,17 +403,18 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
 
     final indicatesButtons = ListView(shrinkWrap: true, children: [
       expenseIndicates,
-      // Row(
-      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //   children: [
-      //     buttons((selectedButton != mainData.keys.first)
-      //         ? mainData.keys.first
-      //         : 'Go back to Sales'),
-      //     buttons((selectedButton != mainData.keys.last)
-      //         ? mainData.keys.last
-      //         : 'Go back to Sales'),
-      //   ],
-      // )
+      profitIndicates,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          buttons((selectedButton != mainData.keys.first)
+              ? mainData.keys.first
+              : 'Go back to Sales'),
+          buttons((selectedButton != mainData.keys.last)
+              ? mainData.keys.last
+              : 'Go back to Sales'),
+        ],
+      )
     ]);
 
     return LayoutBuilder(builder: (context, constraint) {

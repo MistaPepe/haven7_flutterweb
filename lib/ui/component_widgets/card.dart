@@ -74,7 +74,7 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
       child: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
-          Container(
+          SizedBox(
             height: double.infinity,
             width: double.infinity,
             child: ClipPath(

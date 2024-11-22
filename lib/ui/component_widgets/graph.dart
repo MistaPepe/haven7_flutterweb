@@ -330,6 +330,7 @@ class SalesBarChart extends StatelessWidget {
 /// piechart
 class InteractivePieChart extends StatefulWidget {
   final Map<String, double> data;
+  
   const InteractivePieChart({super.key, required this.data});
 
   @override
@@ -345,11 +346,9 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
       final isHovered = index == _hoveredIndex;
       final double radius = isHovered ? 60 : 50;
       final double fontSize = isHovered ? 18 : 14;
-      final color = Colors.primaries[index % Colors.primaries.length];
 
       return PieChartSectionData(
         value: data.values.elementAt(index),
-        color: color,
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
@@ -363,7 +362,7 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
   @override
   Widget build(BuildContext context) {
     final chartData = widget.data;
-    final total = chartData!.values.reduce((a, b) => a + b);
+    final total = chartData.values.reduce((a, b) => a + b);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -429,16 +428,17 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
 
 class GraphIndicator extends StatelessWidget {
 
-      Color color = Colors.white;
+      Color? color = Colors.white;
       String title = 'butu';
       bool isSquare = true;
       Color textColor = Colors.black;
       List<String> subCategories = [];
       double size = 16;
 
-  Widget indicateTile(String text) {
+  Widget indicateTile(String text, bool isSub) {
     return Row(
       children: <Widget>[
+        if(isSub) const SizedBox(width: 25,),
         Container(
           width: size,
           height: size,
@@ -466,19 +466,16 @@ class GraphIndicator extends StatelessWidget {
     return ListView(
       shrinkWrap: true,
       children: List.generate(subCategories.length, (index) {
-        return indicateTile(subCategories[index]);
+        return indicateTile(subCategories[index], true);
       }).toList(),
     );
   }
 
   buildIndicates(){
-     return (subCategories == <String>[])
-        ? indicateTile(title)
+     return (subCategories.isEmpty)
+        ? indicateTile(title, false)
         : Column(
-            children: [indicateTile(title), SizedBox.square(
-              //TODO: butu
-              dimension: 100,
-              child: withSub())],
+            children: [indicateTile(title, false),  withSub()],
           );
   }
 
