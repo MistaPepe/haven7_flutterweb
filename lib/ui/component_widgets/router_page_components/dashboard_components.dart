@@ -59,7 +59,7 @@ class _DashboarLayoutState extends State<DashboarLayout> {
             const SizedBox(
               height: 20,
             ),
-            TodayOverallPieChart()
+            Center(child: TodayOverallPieChart())
           ],
         ));
   }
@@ -335,17 +335,16 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
   }
 }
 
-class TodayOverallPieChart extends StatelessWidget {
-  TodayOverallPieChart({super.key});
+class TodayOverallPieChart extends StatefulWidget {
+  const TodayOverallPieChart({super.key});
 
-  // Define categories and their subsets
-  final Map<String, List<String>> categoryData = {
-    "Expenses": ["Food", "Gas", "Production", "Employee Salary"],
-    "Profit": ["Pet Bottles", "Gallon", "Slim"],
-    "Debt": ["Unpaid Bills", "Loan", "Pending Salaries"],
-  };
+  @override
+  State<TodayOverallPieChart> createState() => _TodayOverallPieChartState();
+}
 
-  // Define colors for main categories and subcategories
+class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
+  String selectedButton = 'Go back to Sales';
+
   static const List<Color> mainColors = [
     Colors.blueAccent, // Profit
     Colors.redAccent, // Debt
@@ -357,89 +356,88 @@ class TodayOverallPieChart extends StatelessWidget {
     "Profit": [Colors.blue[400]!, Colors.blue[200]!, Colors.blue[100]!],
     "Debt": [Colors.red[400]!, Colors.red[300]!, Colors.red[200]!],
   };
+  // Define categories and their subsets
+  final Map<String, List<String>> categoryData = {
+    "Expenses": ["Food", "Gas", "Production", "Employee Salary"],
+    "Profit": ["Pet Bottles", "Gallon", "Slim"],
+    "Debt": ["Unpaid Bills", "Loan", "Pending Salaries"],
+  };
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, double> _mainData = {
+    final Map<String, double> mainData = {
       'Expenses': 70,
       'Profit': 30,
     };
-    return CardTemplateSimple(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Pie Chart Section
-          SizedBox(
-            height: 450,
-            child: Row(
+
+    var expenseIndicates = GraphIndicator()
+      ..title = mainData.keys.first
+      ..color = Colors.blueAccent
+      ..size = 12
+      ..subCategories = categoryData.values.first
+      ..build(context);
+
+    var profitIndicates = GraphIndicator()
+      ..title = mainData.keys.last
+      ..subCategories = categoryData.entries
+          .firstWhere((entry) => entry.key == mainData.keys.last)
+          .value
+      ..build(context);
+
+    buttons(String name) {
+      return Flexible(
+          child: CustomCallbackButton(
+        paddingHeight: 10,
+        paddingWidth: 20,
+        text: name,
+        onPressed: () {
+          setState(() {
+            selectedButton = name;
+          });
+        },
+      ));
+    }
+
+    final indicatesButtons = ListView(shrinkWrap: true, children: [
+      expenseIndicates,
+      // Row(
+      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //   children: [
+      //     buttons((selectedButton != mainData.keys.first)
+      //         ? mainData.keys.first
+      //         : 'Go back to Sales'),
+      //     buttons((selectedButton != mainData.keys.last)
+      //         ? mainData.keys.last
+      //         : 'Go back to Sales'),
+      //   ],
+      // )
+    ]);
+
+    return LayoutBuilder(builder: (context, constraint) {
+      return CardTemplateSimple(
+        padding: 30,
+        baseWidth: 1000,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Row(
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        child: InteractivePieChart(
-                            data:
-                                _mainData), // Replace with your pie chart widget
-                      ),
-                      Flexible(
-                          child: CustomCallbackButton(
-                        text: 'asdasdasdasdasdasd',
-                        image: 'lib/src/crystalizebg.png',
-                        icon: const Icon(Icons.upload),
-                        onPressed: () {},
-                      )),
-                    ],
-                  ),
+                Flexible(
+                  child: SizedBox(
+                      height: 300, child: InteractivePieChart(data: mainData)),
                 ),
-                Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: categoryData.entries
-                        .map((entry) => _buildCategory(entry))
-                        .toList(),
-                  ),
+                const SizedBox(
+                  width: 15,
                 ),
+                if (constraint.maxWidth > 600)
+                  Flexible(child: indicatesButtons),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Builds a category indicator with subcategories
-  Widget _buildCategory(MapEntry<String, List<String>> entry) {
-    final int categoryIndex = categoryData.keys.toList().indexOf(entry.key);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Main Category Indicator
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Indicator(
-            color: mainColors[categoryIndex],
-            text: entry.key,
-            isSquare: true,
-          ),
+            if (constraint.maxWidth < 601) indicatesButtons
+          ],
         ),
-        // Subcategories
-        Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: List.generate(
-            entry.value.length,
-            (subIndex) => Indicator(
-              color: subcategoryColors[entry.key]![subIndex],
-              text: entry.value[subIndex],
-              isSquare: true,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16), // Spacing between categories
-      ],
-    );
+      );
+    });
   }
 }
 

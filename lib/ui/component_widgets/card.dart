@@ -139,6 +139,7 @@ class CardTemplateSimple extends StatelessWidget {
   final bool haveShadow;
   final int? baseWidth;
   final int? baseHeight;
+  final double? padding;
   final Color color;
   final Widget child;
   const CardTemplateSimple(
@@ -148,11 +149,12 @@ class CardTemplateSimple extends StatelessWidget {
       this.color = Colors.white,
       required this.child,
       this.baseWidth,
-      this.baseHeight});
+      this.baseHeight, this.padding});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(padding ?? 0),
       height: (baseHeight != null) ? baseHeight?.toDouble() : null,
       width: (baseWidth != null) ? baseWidth?.toDouble() : null,
       decoration: BoxDecoration(

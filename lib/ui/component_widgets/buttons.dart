@@ -6,7 +6,9 @@ class CustomCallbackButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final Icon? icon;
-  final String image;
+  final String? image;
+  final double? paddingHeight;
+  final double? paddingWidth;
 
 
   const CustomCallbackButton(
@@ -14,7 +16,7 @@ class CustomCallbackButton extends StatelessWidget {
       required this.onPressed,
       super.key,
       this.icon,
-      this.image = '',
+      this.image, this.paddingHeight, this.paddingWidth,
      });
 
   @override
@@ -23,51 +25,54 @@ class CustomCallbackButton extends StatelessWidget {
       onTap: onPressed,
       child: IntrinsicWidth(
         // Wrap with IntrinsicWidth
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage(
-                image,
-              ),
-            ),
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFF007BFF), // Start color
-                Color(0xFF0056D6), // End color
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16), // Rounded corners
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 8,
-                offset: const Offset(2, 4), // Shadow position
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+        child: MouseRegion(
+           cursor: SystemMouseCursors.click,
+          child: Container(
+            decoration: BoxDecoration(
+              image:(image == null) ? null : DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage(
+                  image!,
                 ),
               ),
-              // If icon exists
-              (icon != null)
-                  ? IconButton(onPressed: onPressed, icon: icon!)
-                  : const SizedBox()
-            ],
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFF007BFF), // Start color
+                  Color(0xFF0056D6), // End color
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16), // Rounded corners
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(2, 4), // Shadow position
+                ),
+              ],
+            ),
+            padding: EdgeInsets.symmetric(vertical: paddingHeight ?? 12, horizontal: paddingWidth ?? 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                // If icon exists
+                (icon != null)
+                    ? IconButton(onPressed: onPressed, icon: icon!)
+                    : const SizedBox()
+              ],
+            ),
           ),
         ),
       ),

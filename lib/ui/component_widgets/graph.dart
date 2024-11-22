@@ -50,7 +50,8 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
         lineTouchData: LineTouchData(
           enabled: true,
           touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (touchedSpot) => const Color.fromARGB(255, 28, 41, 158),
+            getTooltipColor: (touchedSpot) =>
+                const Color.fromARGB(255, 28, 41, 158),
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((touchedSpot) {
                 // Access the value and add custom content
@@ -93,17 +94,17 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
             sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(
-            // sideTitles: SideTitles(
-            //   showTitles: true,
-            //   interval: 1, // Show title for each day
-            //   getTitlesWidget: (value, meta) {
-            //     return Text(
-            //       'Day ${value.toInt() + 1}',
-            //       style: const TextStyle(color: Colors.black, fontSize: 10),
-            //     );
-            //   },
-            // ),
-          ),
+              // sideTitles: SideTitles(
+              //   showTitles: true,
+              //   interval: 1, // Show title for each day
+              //   getTitlesWidget: (value, meta) {
+              //     return Text(
+              //       'Day ${value.toInt() + 1}',
+              //       style: const TextStyle(color: Colors.black, fontSize: 10),
+              //     );
+              //   },
+              // ),
+              ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               minIncluded: false,
@@ -137,7 +138,9 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
                 end: Alignment.bottomCenter,
               ),
             ),
-            dotData: const FlDotData(show: false,),
+            dotData: const FlDotData(
+              show: false,
+            ),
           ),
         ],
       ),
@@ -327,8 +330,7 @@ class SalesBarChart extends StatelessWidget {
 /// piechart
 class InteractivePieChart extends StatefulWidget {
   final Map<String, double> data;
-  const InteractivePieChart({super.key,required this.data});
-
+  const InteractivePieChart({super.key, required this.data});
 
   @override
   State<InteractivePieChart> createState() => _InteractivePieChartState();
@@ -339,7 +341,6 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
 
   // Generate pie chart sections dynamically
   List<PieChartSectionData> _getSections(Map<String, double> data) {
-
     return List.generate(data.length, (index) {
       final isHovered = index == _hoveredIndex;
       final double radius = isHovered ? 60 : 50;
@@ -349,7 +350,6 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
       return PieChartSectionData(
         value: data.values.elementAt(index),
         color: color,
-
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
@@ -362,7 +362,6 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
 
   @override
   Widget build(BuildContext context) {
-
     final chartData = widget.data;
     final total = chartData!.values.reduce((a, b) => a + b);
 
@@ -371,7 +370,7 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
       children: [
         // Pie Chart
         SizedBox(
-          height: 300,
+          height: 250,
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -389,8 +388,8 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
                           _hoveredIndex = -1;
                           return;
                         }
-                        _hoveredIndex =
-                            pieTouchResponse.touchedSection!.touchedSectionIndex;
+                        _hoveredIndex = pieTouchResponse
+                            .touchedSection!.touchedSectionIndex;
                       });
                     },
                   ),
@@ -399,8 +398,6 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
             ],
           ),
         ),
-
-        const SizedBox(height: 20),
 
         // Hovered Slice Info
         if (_hoveredIndex != -1)
@@ -427,6 +424,67 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
           ),
       ],
     );
+  }
+}
+
+class GraphIndicator extends StatelessWidget {
+
+      Color color = Colors.white;
+      String title = 'butu';
+      bool isSquare = true;
+      Color textColor = Colors.black;
+      List<String> subCategories = [];
+      double size = 16;
+
+  Widget indicateTile(String text) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
+            color: color,
+          ),
+        ),
+        const SizedBox(
+          width: 4,
+        ),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        )
+      ],
+    );
+  }
+
+  withSub() {
+    return ListView(
+      shrinkWrap: true,
+      children: List.generate(subCategories.length, (index) {
+        return indicateTile(subCategories[index]);
+      }).toList(),
+    );
+  }
+
+  buildIndicates(){
+     return (subCategories == <String>[])
+        ? indicateTile(title)
+        : Column(
+            children: [indicateTile(title), SizedBox.square(
+              //TODO: butu
+              dimension: 100,
+              child: withSub())],
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return buildIndicates();
   }
 }
 
