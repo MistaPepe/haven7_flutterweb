@@ -61,7 +61,7 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
                 // Customize the tooltip content here
                 return LineTooltipItem(
                   'Index: $index\nValue: $value\nAdditional info here',
-                  TextStyle(
+                  const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
@@ -168,7 +168,7 @@ class Linechart1 extends StatelessWidget {
             return FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1);
           },
         ),
-        titlesData: FlTitlesData(
+        titlesData: const FlTitlesData(
           show: false,
           topTitles: AxisTitles(
             sideTitles: SideTitles(showTitles: false),
@@ -188,7 +188,7 @@ class Linechart1 extends StatelessWidget {
         borderData: FlBorderData(show: false),
         lineBarsData: [
           LineChartBarData(
-            spots: [
+            spots: const [
               FlSpot(0, 1000),
               FlSpot(3, 2100),
               FlSpot(4, 2300),
@@ -209,7 +209,7 @@ class Linechart1 extends StatelessWidget {
                 end: Alignment.bottomCenter,
               ),
             ),
-            dotData: FlDotData(show: false),
+            dotData: const FlDotData(show: false),
           ),
         ],
       ),
@@ -236,7 +236,7 @@ class SalesBarChart extends StatelessWidget {
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 return BarTooltipItem(
                   'Sales: ${rod.toY.round()}',
-                  TextStyle(color: Colors.white),
+                  const TextStyle(color: Colors.white),
                 );
               },
             ),
@@ -248,7 +248,7 @@ class SalesBarChart extends StatelessWidget {
                 reservedSize: 40,
                 getTitlesWidget: (value, meta) {
                   return Text('${value.toInt() * 1000}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold));
                 },
               ),
@@ -273,7 +273,7 @@ class SalesBarChart extends StatelessWidget {
                   ];
                   return Text(
                     months[value.toInt()],
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
                   );
                 },
@@ -330,8 +330,10 @@ class SalesBarChart extends StatelessWidget {
 /// piechart
 class InteractivePieChart extends StatefulWidget {
   final Map<String, double> data;
-  
-  const InteractivePieChart({super.key, required this.data});
+  final List<Color> listColor;
+
+  const InteractivePieChart(
+      {super.key, required this.data, required this.listColor});
 
   @override
   State<InteractivePieChart> createState() => _InteractivePieChartState();
@@ -343,12 +345,16 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
   // Generate pie chart sections dynamically
   List<PieChartSectionData> _getSections(Map<String, double> data) {
     return List.generate(data.length, (index) {
+      final listOfColor = widget.listColor;
       final isHovered = index == _hoveredIndex;
       final double radius = isHovered ? 60 : 50;
       final double fontSize = isHovered ? 18 : 14;
 
       return PieChartSectionData(
-        value: data.values.elementAt(index),
+        color: listOfColor[index],
+        value: (data.keys.elementAt(index) != "Expenses")
+            ? data.values.elementAt(index)
+            : data.values.elementAt(index) * -1,
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
@@ -414,7 +420,7 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text(
-              'Total: $total',
+              'Total Sales: $total',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
@@ -427,24 +433,27 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
 }
 
 class GraphIndicator extends StatelessWidget {
+  Color color = Colors.white;
+  String title = 'butu';
+  bool isSquare = true;
+  Color textColor = Colors.black;
+  Map<String, Color> mapSubCategory = {};
+  double size = 16;
 
-      Color? color = Colors.white;
-      String title = 'butu';
-      bool isSquare = true;
-      Color textColor = Colors.black;
-      List<String> subCategories = [];
-      double size = 16;
-
-  Widget indicateTile(String text, bool isSub) {
+//main generator for each row or tile
+  Widget indicateTile(String text, {Color? subColor}) {
     return Row(
       children: <Widget>[
-        if(isSub) const SizedBox(width: 25,),
+        if (subColor != null) // spacer like an intend
+          const SizedBox(
+            width: 25,
+          ),
         Container(
           width: size,
           height: size,
           decoration: BoxDecoration(
             shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
-            color: color,
+            color: subColor ?? color,
           ),
         ),
         const SizedBox(
@@ -462,68 +471,25 @@ class GraphIndicator extends StatelessWidget {
     );
   }
 
+//generate when there is sub
   withSub() {
     return ListView(
-      shrinkWrap: true,
-      children: List.generate(subCategories.length, (index) {
-        return indicateTile(subCategories[index], true);
-      }).toList(),
-    );
+        shrinkWrap: true,
+        children: mapSubCategory.entries
+            .map((entry) => indicateTile(entry.key, subColor: entry.value))
+            .toList());
   }
 
-  buildIndicates(){
-     return (subCategories.isEmpty)
-        ? indicateTile(title, false)
+  buildIndicates() {
+    return (mapSubCategory.isEmpty)
+        ? indicateTile(title)
         : Column(
-            children: [indicateTile(title, false),  withSub()],
+            children: [indicateTile(title), withSub()],
           );
   }
 
   @override
   Widget build(BuildContext context) {
     return buildIndicates();
-  }
-}
-
-class Indicator extends StatelessWidget {
-  const Indicator({
-    super.key,
-    required this.color,
-    required this.text,
-    required this.isSquare,
-    this.size = 16,
-    this.textColor,
-  });
-  final Color color;
-  final String text;
-  final bool isSquare;
-  final double size;
-  final Color? textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
-            color: color,
-          ),
-        ),
-        const SizedBox(
-          width: 4,
-        ),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        )
-      ],
-    );
   }
 }
