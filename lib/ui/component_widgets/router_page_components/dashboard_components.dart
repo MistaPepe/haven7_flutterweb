@@ -342,37 +342,45 @@ class TodayOverallPieChart extends StatefulWidget {
   State<TodayOverallPieChart> createState() => _TodayOverallPieChartState();
 }
 
-class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
-  String selectedButton = 'Go back';
+String selectedButton = 'Go back';
+int showExpenseCheckBox = 1;
 
+class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
+//color for piechart and graph indicator for main and each subcategory
   static Map<String, List<Color>> categoryColor = {
-    'Go back': const [Colors.redAccent, Colors.lightBlue, Colors.green],
-    "Expenses": const [
-      Color.fromARGB(255, 255, 0, 0),
-      Color(0xFFFF8A80),
-      Color(0xFFFF5252),
-      Color(0xFFD32F2F)
+    'Go back': const [
+      Colors.lightBlue,
+      Colors.green,
+      Colors.redAccent,
     ],
-    "Profit": const [
+    "Cash Sales": const [
       Color.fromARGB(255, 0, 140, 255),
       Color.fromARGB(255, 125, 194, 250),
       Color(0xFF0D47A1)
     ],
-    "Debt": const [Color(0xFF43A047), Color(0xFF1B5E20)],
+    "Due": const [Color(0xFF43A047), Color(0xFF1B5E20)],
+    "Expenses": const [
+      Color.fromARGB(255, 255, 0, 0),
+      Color(0xFFFF8A80),
+      Color.fromARGB(255, 133, 14, 14),
+      Color.fromARGB(255, 211, 47, 102)
+    ],
   };
-  // Define categories and their subsets
+  // data for subset and their value-------------------
   final Map<String, List<String>> subCategoryName = {
+    "Cash Sales": ["Pet Bottles", "Gallon", "Slim"],
+    "Due": ["Unpaid Bills", "Loan"],
     "Expenses": ["Food & Gas", "Electricity", "Production", "Employee Salary"],
-    "Profit": ["Pet Bottles", "Gallon", "Slim"],
-    "Debt": ["Unpaid Bills", "Loan"],
   };
 
   final Map<String, List<double>> subCategoryNumber = {
+    "Cash Sales": [2980, 1580, 1660],
+    "Due": [2980, 400],
     "Expenses": [200, 400, 1490, 1200],
-    "Profit": [2980, 1580, 1660],
-    "Debt": [2980, 400],
   };
-//method to return a map of names of subcategory then eihter a double or color as value
+  //-----------------------------
+
+  //method to return a map of names of subcategory then eihter a double or color as value
   Map<String, T> subcategoryData<T>(List<String> names, List<T> values) {
     Map<String, T> placeholder = {};
     for (int i = 0; i < names.length; i++) {
@@ -381,39 +389,104 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
     return placeholder;
   }
 
-  buttons(String name) => CustomCallbackButton(
-        paddingHeight: 10,
-        paddingWidth: 20,
-        text: name,
-        onPressed: () {
-          setState(() {
-            selectedButton = name;
-          });
-        },
-      );
+  Icon _getIcon() {
+    switch (showExpenseCheckBox) {
+      case 1:
+        return const Icon(Icons.check_box_rounded);
+      case 2:
+        return const Icon(Icons.check_box_outline_blank_rounded);
+      default:
+        return const Icon(Icons.pie_chart);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, double> mainData = {
+    final Map<String, double> mainDataNoExpense = {
+      'Cash Sales': subCategoryNumber.entries
+          .firstWhere((entry) => entry.key == 'Cash Sales')
+          .value
+          .reduce((a, b) => a + b)
+          .toDouble(),
+      'Due': subCategoryNumber.entries
+          .firstWhere((entry) => entry.key == 'Due')
+          .value
+          .reduce((a, b) => a + b)
+          .toDouble(),
+    };
+
+    ///data for pie chart when there are no selected slice
+    ///this is the data will shown first in the piechart
+    Map<String, double> mainData = {
+      ...mainDataNoExpense, //since they have similar contents apart from expense
       'Expenses': -subCategoryNumber.entries
           .firstWhere((entry) => entry.key == 'Expenses')
           .value
           .reduce((a, b) => a + b)
           .toDouble(),
-      'Profit': subCategoryNumber.entries
-          .firstWhere((entry) => entry.key == 'Profit')
-          .value
-          .reduce((a, b) => a + b)
-          .toDouble(),
-      'Debt': subCategoryNumber.entries
-          .firstWhere((entry) => entry.key == 'Debt')
-          .value
-          .reduce((a, b) => a + b)
-          .toDouble()
     };
 
+    buttons(String name) => CustomCallbackButton(
+          paddingHeight: 10,
+          paddingWidth: 20,
+          text: name,
+          icon: (name == "Expenses") ? _getIcon() : null,
+          onPressed: () {
+            setState(() {
+              if (name == "Expenses" && showExpenseCheckBox == 1) {
+                showExpenseCheckBox++;
+              } else if (name == "Expenses" && showExpenseCheckBox == 2) {
+                showExpenseCheckBox++;
+                selectedButton = name;
+              } else {
+                showExpenseCheckBox = 1;
+                selectedButton = name;
+              }
+            });
+          },
+        );
+
+    ///graph indicator for each categories
+    ///it also rewrites the sub category when the user inputs or change the selected button
+
+    final cashSalesIndicates = GraphIndicator()
+      ..title = "Cash Sales"
+      ..color = Colors.lightBlue
+      ..mapSubCategory = (selectedButton == 'Cash Sales')
+          ? subcategoryData(
+              subCategoryName.entries
+                  .firstWhere((entry) => entry.key == selectedButton)
+                  .value,
+              categoryColor.entries
+                  .firstWhere((entry) => entry.key == selectedButton)
+                  .value)
+          : {}
+      ..subNum = (selectedButton == 'Cash Sales')
+          ? subCategoryNumber.entries
+              .firstWhere((entry) => entry.key == selectedButton)
+              .value
+          : [];
+
+    final dueindicates = GraphIndicator()
+      ..title = "Dues"
+      ..color = const Color.fromARGB(255, 30, 233, 98)
+      ..mapSubCategory = (selectedButton == 'Due')
+          ? subcategoryData(
+              subCategoryName.entries
+                  .firstWhere((entry) => entry.key == selectedButton)
+                  .value,
+              categoryColor.entries
+                  .firstWhere((entry) => entry.key == selectedButton)
+                  .value)
+          : {}
+      ..subNum = (selectedButton == 'Due')
+          ? subCategoryNumber.entries
+              .firstWhere((entry) => entry.key == selectedButton)
+              .value
+          : [];
+
     final expenseIndicates = GraphIndicator()
-      ..title = mainData.keys.first
+      ..title = "Expenses"
       ..color = Colors.redAccent
       ..mapSubCategory = (selectedButton == "Expenses")
           ? subcategoryData(
@@ -424,43 +497,23 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
                   .firstWhere((entry) => entry.key == selectedButton)
                   .value)
           : {}
-      ..build(context);
+      ..subNum = (selectedButton == "Expenses")
+          ? subCategoryNumber.entries
+              .firstWhere((entry) => entry.key == selectedButton)
+              .value
+          : [];
+//--------------------------------------------
 
-    final profitIndicates = GraphIndicator()
-      ..title = "Profit"
-      ..color = Colors.lightBlue
-      ..mapSubCategory = (selectedButton == 'Profit')
-          ? subcategoryData(
-              subCategoryName.entries
-                  .firstWhere((entry) => entry.key == selectedButton)
-                  .value,
-              categoryColor.entries
-                  .firstWhere((entry) => entry.key == selectedButton)
-                  .value)
-          : {}
-      ..build(context);
-
-    final debtIndicates = GraphIndicator()
-      ..title = mainData.keys.last
-      ..color = const Color.fromARGB(255, 30, 233, 98)
-      ..mapSubCategory = (selectedButton == 'Debt')
-          ? subcategoryData(
-              subCategoryName.entries
-                  .firstWhere((entry) => entry.key == selectedButton)
-                  .value,
-              categoryColor.entries
-                  .firstWhere((entry) => entry.key == selectedButton)
-                  .value)
-          : {}
-      ..build(context);
-
+//the section wherein the graph indicates colors and buttons are presented
     final indicatesButtons = Column(children: [
-      if (selectedButton != "Profit" && selectedButton != "Debt")
+      if (selectedButton != "Expenses" && selectedButton != "Due")
+        cashSalesIndicates,
+      if (selectedButton != "Expenses" && selectedButton != "Cash Sales")
+        dueindicates,
+      if (selectedButton != "Cash Sales" &&
+          selectedButton != "Due" &&
+          showExpenseCheckBox != 2)
         expenseIndicates,
-      if (selectedButton != "Expenses" && selectedButton != "Debt")
-        profitIndicates,
-      if (selectedButton != "Expenses" && selectedButton != "Profit")
-        debtIndicates,
       Expanded(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -469,7 +522,7 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
             buttons((selectedButton != mainData.keys.first)
                 ? mainData.keys.first
                 : 'Go back'),
-            buttons((selectedButton != "Profit") ? "Profit" : 'Go back'),
+            buttons((selectedButton != "Due") ? "Due" : 'Go back'),
             buttons((selectedButton != mainData.keys.last)
                 ? mainData.keys.last
                 : 'Go back'),
@@ -477,8 +530,21 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
         ),
       )
     ]);
+//---------------------------------------------
 
+// this is where the return layout for the whole class
     return LayoutBuilder(builder: (context, constraint) {
+      pieChartSelec() {
+        if (showExpenseCheckBox == 2) {
+          return mainDataNoExpense;
+        } else if (selectedButton == 'Go back') {
+          return mainData;
+        } else {
+          return subcategoryData(subCategoryName[selectedButton]!,
+              subCategoryNumber[selectedButton]!);
+        }
+      }
+
       return CardTemplateSimple(
         padding: 30,
         baseWidth: 1000,
@@ -489,13 +555,11 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Flexible(
+                  // pie chart section-----------------------
                   child: SizedBox(
                       height: 300,
                       child: InteractivePieChart(
-                        data: (selectedButton == 'Go back')
-                            ? mainData
-                            : subcategoryData(subCategoryName[selectedButton]!,
-                                subCategoryNumber[selectedButton]!),
+                        data: pieChartSelec(),
                         listColor: categoryColor.entries
                             .firstWhere((entry) => entry.key == selectedButton)
                             .value,
@@ -504,12 +568,13 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
                 const SizedBox(
                   width: 15,
                 ),
-                if (constraint.maxWidth > 630)
+                if (constraint.maxWidth > 630) // indicates and buttons section
                   Expanded(
                       child: SizedBox(height: 300, child: indicatesButtons)),
               ],
             ),
-            if (constraint.maxWidth < 631)
+            if (constraint.maxWidth <
+                631) // indicates and buttons section if width is too small
               SizedBox(height: 250, child: indicatesButtons)
           ],
         ),

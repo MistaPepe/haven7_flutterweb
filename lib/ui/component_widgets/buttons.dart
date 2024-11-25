@@ -9,6 +9,7 @@ class CustomCallbackButton extends StatelessWidget {
   final String? image;
   final double? paddingHeight;
   final double? paddingWidth;
+  final bool dividerForicon;
 
 
   const CustomCallbackButton(
@@ -16,7 +17,7 @@ class CustomCallbackButton extends StatelessWidget {
       required this.onPressed,
       super.key,
       this.icon,
-      this.image, this.paddingHeight, this.paddingWidth,
+      this.image, this.paddingHeight, this.paddingWidth,  this.dividerForicon = false,
      });
 
   @override
@@ -67,9 +68,19 @@ class CustomCallbackButton extends StatelessWidget {
                     ),
                   ),
                 ),
+                //Divider for text and icon
+                (dividerForicon)
+                    ? Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Divider()!,
+                    )
+                    : const SizedBox(),
                 // If icon exists
                 (icon != null)
-                    ? IconButton(onPressed: onPressed, icon: icon!)
+                    ? Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: icon!,
+                    )
                     : const SizedBox()
               ],
             ),

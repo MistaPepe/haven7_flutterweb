@@ -331,9 +331,10 @@ class SalesBarChart extends StatelessWidget {
 class InteractivePieChart extends StatefulWidget {
   final Map<String, double> data;
   final List<Color> listColor;
+  final String? title;
 
   const InteractivePieChart(
-      {super.key, required this.data, required this.listColor});
+      {super.key, required this.data, required this.listColor, this.title});
 
   @override
   State<InteractivePieChart> createState() => _InteractivePieChartState();
@@ -354,7 +355,7 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
         color: listOfColor[index],
         value: (data.keys.elementAt(index) != "Expenses")
             ? data.values.elementAt(index)
-            : data.values.elementAt(index) * -1,
+            : -data.values.elementAt(index),
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
@@ -420,7 +421,7 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text(
-              'Total Sales: $total',
+              'Total Profit: $total',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
@@ -432,59 +433,98 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
   }
 }
 
-class GraphIndicator extends StatelessWidget {
-  Color color = Colors.white;
+class GraphIndicator extends StatefulWidget {
+ Color color = Colors.white;
+
   String title = 'butu';
+
   bool isSquare = true;
+
   Color textColor = Colors.black;
+
   Map<String, Color> mapSubCategory = {};
+
   double size = 16;
 
+  List<double> subNum = [];
+
+  @override
+  State<GraphIndicator> createState() => _GraphIndicatorState();
+}
+
+class _GraphIndicatorState extends State<GraphIndicator> {
+ 
+
 //main generator for each row or tile
-  Widget indicateTile(String text, {Color? subColor}) {
-    return Row(
-      children: <Widget>[
-        if (subColor != null) // spacer like an intend
+  Widget indicateTile(String text, {Color? subColor, double? num}) {
+    return SizedBox(
+      height: 35,
+      child: Row(
+        children: <Widget>[
+          if (subColor != null) // spacer like an intend
+            const SizedBox(
+              width: 30,
+            ),
+          Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              shape: widget.isSquare ? BoxShape.rectangle : BoxShape.circle,
+              color: subColor ?? widget.color,
+            ),
+          ),
           const SizedBox(
-            width: 25,
+            width: 4,
           ),
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
-            color: subColor ?? color,
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: widget.textColor,
+            ),
           ),
-        ),
-        const SizedBox(
-          width: 4,
-        ),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        )
-      ],
+          
+          if (subColor != null) // spacer like an intend
+           Expanded(
+             child: Align(
+              alignment: Alignment.centerRight,
+               child: Text(
+                num.toString(),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: widget.textColor,
+                ),
+                         ),
+             ),
+           ),
+          if (subColor != null) // spacer like an intend
+            const SizedBox(
+              width: 30,
+            ),
+        ],
+      ),
     );
   }
 
 //generate when there is sub
   withSub() {
-    return ListView(
-        shrinkWrap: true,
-        children: mapSubCategory.entries
-            .map((entry) => indicateTile(entry.key, subColor: entry.value))
+    int index = -1;
+    var numList = widget.subNum;
+    return Column(
+        children: widget.mapSubCategory.entries
+            .map((entry) {
+              index++;
+              return indicateTile(entry.key, subColor: entry.value,num: numList[index]);})
             .toList());
   }
 
   buildIndicates() {
-    return (mapSubCategory.isEmpty)
-        ? indicateTile(title)
+    return (widget.mapSubCategory.isEmpty)
+        ? indicateTile(widget.title)
         : Column(
-            children: [indicateTile(title), withSub()],
+            children: [indicateTile(widget.title), withSub()],
           );
   }
 
