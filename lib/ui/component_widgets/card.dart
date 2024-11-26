@@ -113,27 +113,6 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
   }
 }
 
-class WaveClipper extends CustomClipper<Path> {
-  final int number;
-  WaveClipper(this.number);
-
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 40); // Start point
-    path.quadraticBezierTo(size.width / 4, size.height, size.width / 2,
-        size.height - 40); // First curve
-    path.quadraticBezierTo(3 * size.width / 4, size.height - 80, size.width,
-        size.height - 40); // Second curve
-    path.lineTo(size.width, 0); // Close path to top-right corner
-    path.close(); // Close the shape
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
 class CardTemplateSimple extends StatelessWidget {
   final bool isCurved;
   final bool haveShadow;

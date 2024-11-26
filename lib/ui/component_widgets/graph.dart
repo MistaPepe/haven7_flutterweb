@@ -434,18 +434,12 @@ class _InteractivePieChartState extends State<InteractivePieChart> {
 }
 
 class GraphIndicator extends StatefulWidget {
- Color color = Colors.white;
-
+  Color color = Colors.white;
   String title = 'butu';
-
   bool isSquare = true;
-
   Color textColor = Colors.black;
-
   Map<String, Color> mapSubCategory = {};
-
   double size = 16;
-
   List<double> subNum = [];
 
   @override
@@ -453,8 +447,6 @@ class GraphIndicator extends StatefulWidget {
 }
 
 class _GraphIndicatorState extends State<GraphIndicator> {
- 
-
 //main generator for each row or tile
   Widget indicateTile(String text, {Color? subColor, double? num}) {
     return SizedBox(
@@ -479,26 +471,25 @@ class _GraphIndicatorState extends State<GraphIndicator> {
           Text(
             text,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: widget.textColor,
             ),
           ),
-          
           if (subColor != null) // spacer like an intend
-           Expanded(
-             child: Align(
-              alignment: Alignment.centerRight,
-               child: Text(
-                num.toString(),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: widget.textColor,
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  num.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: widget.textColor,
+                  ),
                 ),
-                         ),
-             ),
-           ),
+              ),
+            ),
           if (subColor != null) // spacer like an intend
             const SizedBox(
               width: 30,
@@ -513,11 +504,11 @@ class _GraphIndicatorState extends State<GraphIndicator> {
     int index = -1;
     var numList = widget.subNum;
     return Column(
-        children: widget.mapSubCategory.entries
-            .map((entry) {
-              index++;
-              return indicateTile(entry.key, subColor: entry.value,num: numList[index]);})
-            .toList());
+        children: widget.mapSubCategory.entries.map((entry) {
+      index++;
+      return indicateTile(entry.key,
+          subColor: entry.value, num: numList[index]);
+    }).toList());
   }
 
   buildIndicates() {

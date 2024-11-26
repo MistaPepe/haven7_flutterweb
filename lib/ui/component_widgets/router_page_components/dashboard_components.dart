@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components.dart';
@@ -20,7 +21,7 @@ class _DashboarLayoutState extends State<DashboarLayout> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
         ),
-        clipBehavior: Clip.antiAlias, // Ensures clipping is active
+        clipBehavior: Clip.antiAlias,
         child: ListView(
           shrinkWrap: true,
           children: [
@@ -38,7 +39,7 @@ class _DashboarLayoutState extends State<DashboarLayout> {
                         ),
                         Expanded(
                             flex: 2,
-                            child: UrgentCostumerOrder(
+                            child: PendingCustomerOrder(
                               customerList: listOfCustomerurgent,
                             ))
                       ],
@@ -50,7 +51,7 @@ class _DashboarLayoutState extends State<DashboarLayout> {
                         const SizedBox(
                           height: 20,
                         ),
-                        UrgentCostumerOrder(
+                        PendingCustomerOrder(
                           customerList: listOfCustomerurgent,
                         )
                       ],
@@ -59,7 +60,8 @@ class _DashboarLayoutState extends State<DashboarLayout> {
             const SizedBox(
               height: 20,
             ),
-            const Center(child: TodayOverallPieChart())
+            const Center(child: TodayOverallPieChart()),
+            const Center(child: ScheduleActivity())
           ],
         ));
   }
@@ -392,11 +394,12 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
   Icon _getIcon() {
     switch (showExpenseCheckBox) {
       case 1:
-        return const Icon(Icons.check_box_rounded);
+        return const Icon(Icons.check_box_rounded, color: Colors.white);
       case 2:
-        return const Icon(Icons.check_box_outline_blank_rounded);
+        return const Icon(Icons.check_box_outline_blank_rounded,
+            color: Colors.white);
       default:
-        return const Icon(Icons.pie_chart);
+        return const Icon(Icons.pie_chart, color: Colors.white);
     }
   }
 
@@ -435,9 +438,13 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
             setState(() {
               if (name == "Expenses" && showExpenseCheckBox == 1) {
                 showExpenseCheckBox++;
+                selectedButton = 'Go back';
               } else if (name == "Expenses" && showExpenseCheckBox == 2) {
                 showExpenseCheckBox++;
                 selectedButton = name;
+              } else if (name == "Expenses" && showExpenseCheckBox == 3) {
+                showExpenseCheckBox = 1;
+                selectedButton = 'Go back';
               } else {
                 showExpenseCheckBox = 1;
                 selectedButton = name;
@@ -520,12 +527,10 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             buttons((selectedButton != mainData.keys.first)
-                ? mainData.keys.first
+                ? 'Cash Sales'
                 : 'Go back'),
             buttons((selectedButton != "Due") ? "Due" : 'Go back'),
-            buttons((selectedButton != mainData.keys.last)
-                ? mainData.keys.last
-                : 'Go back'),
+            buttons((mainData.keys.last)),
           ],
         ),
       )
@@ -547,34 +552,33 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
 
       return CardTemplateSimple(
         padding: 30,
-        baseWidth: 1000,
+        baseWidth: 800,
         child: ListView(
           shrinkWrap: true,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  // pie chart section-----------------------
-                  child: SizedBox(
-                      height: 300,
-                      child: InteractivePieChart(
-                        data: pieChartSelec(),
-                        listColor: categoryColor.entries
-                            .firstWhere((entry) => entry.key == selectedButton)
-                            .value,
-                      )),
-                ),
+                SizedBox(
+                    height: 300,
+                    width: 300,
+                    child: InteractivePieChart(
+                      data: pieChartSelec(),
+                      listColor: categoryColor.entries
+                          .firstWhere((entry) => entry.key == selectedButton)
+                          .value,
+                    )),
                 const SizedBox(
                   width: 15,
                 ),
-                if (constraint.maxWidth > 630) // indicates and buttons section
+                if (constraint.maxWidth > 740) // indicates and buttons section
                   Expanded(
                       child: SizedBox(height: 300, child: indicatesButtons)),
               ],
             ),
             if (constraint.maxWidth <
-                631) // indicates and buttons section if width is too small
+                741) // indicates and buttons section if width is too small
               SizedBox(height: 250, child: indicatesButtons)
           ],
         ),
@@ -588,15 +592,15 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
 ///-------------------------------------------------------------------------------
 //generate a list of list of int for random ARGB color for the container of icons
 
-class UrgentCostumerOrder extends StatefulWidget {
+class PendingCustomerOrder extends StatefulWidget {
   final List<CustomerUrgentDetails>? customerList;
-  const UrgentCostumerOrder({super.key, this.customerList});
+  const PendingCustomerOrder({super.key, this.customerList});
 
   @override
-  State<UrgentCostumerOrder> createState() => _UrgentCostumerOrderState();
+  State<PendingCustomerOrder> createState() => _PendingCustomerOrderState();
 }
 
-class _UrgentCostumerOrderState extends State<UrgentCostumerOrder> {
+class _PendingCustomerOrderState extends State<PendingCustomerOrder> {
   bool _isHovering = false;
   int _indexHover = -1;
 
@@ -740,6 +744,7 @@ class _UrgentCostumerOrderState extends State<UrgentCostumerOrder> {
   }
 }
 
+//example for customer
 var customer1 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
 var customer5 = const CustomerUrgentDetails('butu', Icon(Icons.person), 1);
 var customer6 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
@@ -775,8 +780,80 @@ class ScheduleActivity extends StatefulWidget {
 }
 
 class _ScheduleActivityState extends State<ScheduleActivity> {
+  final List<String> days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday"
+  ];
+
+  var monday = const DayTask(dayTaskBox: [
+    TaskBox(
+        taskName: "Butu",
+        startTime: TimeOfDay(hour: 11, minute: 30),
+        endTime: TimeOfDay(hour: 17, minute: 30),
+        color: Colors.black)
+  ], day: "Monday");
+  
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return CardTemplateSimple(
+      baseHeight: 400,
+      padding: 20,
+      child: LayoutBuilder(
+        builder: (context, constraint) {
+        return monday;
+      }),
+    );
+  }
+}
+
+class TaskBox {
+  final String taskName;
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
+  final Color color;
+
+  const TaskBox({
+    required this.taskName,
+    required this.startTime,
+    required this.endTime,
+    required this.color,
+  });
+}
+
+class DayTask extends StatefulWidget {
+  final List<TaskBox> dayTaskBox;
+  final String day;
+
+  const DayTask({super.key, required this.dayTaskBox, required this.day});
+
+  @override
+  State<DayTask> createState() => _DayTaskState();
+}
+
+class _DayTaskState extends State<DayTask> {
+  @override
+  Widget build(BuildContext context) {
+    return CardTemplateSimple(
+        baseHeight: 300,
+        child: LayoutBuilder(builder: (context, constraint) {
+          var numberOfContainer = (constraint.maxHeight / 50).floor();
+          addLine() {
+            return Container(
+              height: 50,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 1, style: BorderStyle.solid)),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: numberOfContainer,
+            itemBuilder: (context, index) {
+              return addLine();
+            },
+          );
+        }));
   }
 }
