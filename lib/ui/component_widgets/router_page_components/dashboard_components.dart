@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components.dart';
@@ -61,7 +60,7 @@ class _DashboarLayoutState extends State<DashboarLayout> {
               height: 20,
             ),
             const Center(child: TodayOverallPieChart()),
-            const Center(child: ScheduleActivity())
+            const Center(child: TodayActivityWidget(title: "Thursday Task",))
           ],
         ));
   }
@@ -771,89 +770,211 @@ class CustomerUrgentDetails {
 ///-------------------------------------------------------------------------------
 ///
 ///-----------------------------------------------------------------------------
+class TodayActivityWidget extends StatefulWidget {
+  final String title;
 
-class ScheduleActivity extends StatefulWidget {
-  const ScheduleActivity({super.key});
+  const TodayActivityWidget({required this.title, Key? key}) : super(key: key);
 
   @override
-  State<ScheduleActivity> createState() => _ScheduleActivityState();
+  State<TodayActivityWidget> createState() => _TodayActivityWidgetState();
 }
 
-class _ScheduleActivityState extends State<ScheduleActivity> {
-  final List<String> days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday"
-  ];
+class _TodayActivityWidgetState extends State<TodayActivityWidget> {
+  Map<String, List<String>> weeklyTasks = {
+    "Monday": ["Task 1", "Task 2"],
+    "Tuesday": ["Task 3", "Task 4"],
+    "Wednesday": ["Task 5"],
+    "Thursday": ["Task 6", "Task 7"],
+    "Friday": ["Task 8"],
+  };
 
-  var monday = const DayTask(dayTaskBox: [
-    TaskBox(
-        taskName: "Butu",
-        startTime: TimeOfDay(hour: 11, minute: 30),
-        endTime: TimeOfDay(hour: 17, minute: 30),
-        color: Colors.black)
-  ], day: "Monday");
-  
-  @override
-  Widget build(BuildContext context) {
-    return CardTemplateSimple(
-      baseHeight: 400,
-      padding: 20,
-      child: LayoutBuilder(
-        builder: (context, constraint) {
-        return monday;
-      }),
+  void _showWeeklyPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const Text(
+                  "Weekly Schedule",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: weeklyTasks.keys.length,
+                    itemBuilder: (context, index) {
+                      final day = weeklyTasks.keys.elementAt(index);
+                      final tasks = weeklyTasks[day]!;
+                      return ExpansionTile(
+                        title: Text(
+                          day,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        children: [
+                          ReorderableListView(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            onReorder: (oldIndex, newIndex) {
+                              setState(() {
+                                if (newIndex > oldIndex) {
+                                  newIndex -= 1;
+                                }
+                                final task = tasks.removeAt(oldIndex);
+                                tasks.insert(newIndex, task);
+                              });
+                            },
+                            children: tasks
+                                .map(
+                                  (task) => Dismissible(
+                                    key: ValueKey(task),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      color: Colors.red,
+                                      child: const Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onDismissed: (direction) {
+                                      setState(() {
+                                        tasks.remove(task);
+                                      });
+                                    },
+                                    child: ListTile(
+                                      key: ValueKey(task),
+                                      title: Text(task),
+                                      trailing: const Icon(Icons.drag_handle),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => _addTaskForDay(context, day),
+                            icon: const Icon(Icons.add),
+                            label: const Text("Add Task"),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
-}
 
-class TaskBox {
-  final String taskName;
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
-  final Color color;
+  void _addTaskForDay(BuildContext context, String day) {
+    TextEditingController taskController = TextEditingController();
 
-  const TaskBox({
-    required this.taskName,
-    required this.startTime,
-    required this.endTime,
-    required this.color,
-  });
-}
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text("Add Task for $day"),
+          content: TextField(
+            controller: taskController,
+            decoration: const InputDecoration(hintText: "Enter task name"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  weeklyTasks[day]!.add(taskController.text);
+                });
+                Navigator.of(dialogContext).pop(); // Close the dialog
+              },
+              child: const Text("Add"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-class DayTask extends StatefulWidget {
-  final List<TaskBox> dayTaskBox;
-  final String day;
-
-  const DayTask({super.key, required this.dayTaskBox, required this.day});
-
-  @override
-  State<DayTask> createState() => _DayTaskState();
-}
-
-class _DayTaskState extends State<DayTask> {
   @override
   Widget build(BuildContext context) {
+    final todayTasks = weeklyTasks[widget.title.split(" ")[0]] ?? [];
     return CardTemplateSimple(
-        baseHeight: 300,
-        child: LayoutBuilder(builder: (context, constraint) {
-          var numberOfContainer = (constraint.maxHeight / 50).floor();
-          addLine() {
-            return Container(
-              height: 50,
-              decoration: BoxDecoration(
-                  border: Border.all(width: 1, style: BorderStyle.solid)),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: numberOfContainer,
-            itemBuilder: (context, index) {
-              return addLine();
-            },
-          );
-        }));
+      baseHeight: 400,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with title and options
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () {
+                  _showWeeklyPopup(context);
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // Draggable list of today's tasks
+          Expanded(
+            child: ReorderableListView(
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) {
+                    newIndex -= 1;
+                  }
+                  final task = todayTasks.removeAt(oldIndex);
+                  todayTasks.insert(newIndex, task);
+                });
+              },
+              children: todayTasks
+                  .map(
+                    (task) => Dismissible(
+                      key: ValueKey(task),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        color: Colors.red,
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (direction) {
+                        setState(() {
+                          todayTasks.remove(task);
+                        });
+                      },
+                      child: ListTile(
+                        key: ValueKey(task),
+                        title: Text(task),
+                        trailing: const Icon(Icons.drag_handle),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
