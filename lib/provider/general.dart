@@ -1,3 +1,4 @@
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
 // drawer data {
@@ -34,6 +35,24 @@ enum AdminDrawer {
   final IconData icon;
 }
 
-
-
 // end drawer data
+
+//screen data
+
+class IsMouseInWidget extends Cubit<bool>{
+  IsMouseInWidget() : super(false);
+  
+
+void toggleState() => emit(!state);
+
+  ScrollPhysics get getIsMouseInAWidget {
+  return (state)
+      ? const NeverScrollableScrollPhysics()
+      : const ClampingScrollPhysics();
+}
+}
+
+
+
+
+double contraintOfPieChart = 0;

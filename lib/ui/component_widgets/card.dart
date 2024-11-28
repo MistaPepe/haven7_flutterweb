@@ -116,8 +116,8 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
 class CardTemplateSimple extends StatelessWidget {
   final bool isCurved;
   final bool haveShadow;
-  final int? baseWidth;
-  final int? baseHeight;
+  final double? baseWidth;
+  final double? baseHeight;
   final double? padding;
   final Color color;
   final Widget child;
@@ -133,6 +133,7 @@ class CardTemplateSimple extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      clipBehavior: Clip.antiAlias,
       padding: EdgeInsets.all(padding ?? 0),
       height: (baseHeight != null) ? baseHeight?.toDouble() : null,
       width: (baseWidth != null) ? baseWidth?.toDouble() : null,

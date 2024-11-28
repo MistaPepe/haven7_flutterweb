@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../../../provider/provider.dart';
 import '../components.dart';
 
 class DashboarLayout extends StatefulWidget {
@@ -59,8 +61,22 @@ class _DashboarLayoutState extends State<DashboarLayout> {
             const SizedBox(
               height: 20,
             ),
-            const Center(child: TodayOverallPieChart()),
-            const Center(child: TodayActivityWidget(title: "Thursday Task",))
+            Row(
+              children: [
+                Expanded(child: TodayOverallPieChart()),
+                const SizedBox(
+                  width: 20,
+                ),
+                Flexible(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => TodayActivityWidget(
+                      baseHeight: 300,
+                      title: "Thursday Task",
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ));
   }
@@ -551,7 +567,6 @@ class _TodayOverallPieChartState extends State<TodayOverallPieChart> {
 
       return CardTemplateSimple(
         padding: 30,
-        baseWidth: 800,
         child: ListView(
           shrinkWrap: true,
           children: [
@@ -770,211 +785,119 @@ class CustomerUrgentDetails {
 ///-------------------------------------------------------------------------------
 ///
 ///-----------------------------------------------------------------------------
+
 class TodayActivityWidget extends StatefulWidget {
   final String title;
+  final double baseHeight;
 
-  const TodayActivityWidget({required this.title, Key? key}) : super(key: key);
+  const TodayActivityWidget(
+      {required this.title, required this.baseHeight, super.key});
 
   @override
   State<TodayActivityWidget> createState() => _TodayActivityWidgetState();
 }
 
 class _TodayActivityWidgetState extends State<TodayActivityWidget> {
-  Map<String, List<String>> weeklyTasks = {
-    "Monday": ["Task 1", "Task 2"],
-    "Tuesday": ["Task 3", "Task 4"],
-    "Wednesday": ["Task 5"],
-    "Thursday": ["Task 6", "Task 7"],
-    "Friday": ["Task 8"],
-  };
-
-  void _showWeeklyPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Text(
-                  "Weekly Schedule",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: weeklyTasks.keys.length,
-                    itemBuilder: (context, index) {
-                      final day = weeklyTasks.keys.elementAt(index);
-                      final tasks = weeklyTasks[day]!;
-                      return ExpansionTile(
-                        title: Text(
-                          day,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        children: [
-                          ReorderableListView(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            onReorder: (oldIndex, newIndex) {
-                              setState(() {
-                                if (newIndex > oldIndex) {
-                                  newIndex -= 1;
-                                }
-                                final task = tasks.removeAt(oldIndex);
-                                tasks.insert(newIndex, task);
-                              });
-                            },
-                            children: tasks
-                                .map(
-                                  (task) => Dismissible(
-                                    key: ValueKey(task),
-                                    direction: DismissDirection.endToStart,
-                                    background: Container(
-                                      alignment: Alignment.centerRight,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20.0),
-                                      color: Colors.red,
-                                      child: const Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    onDismissed: (direction) {
-                                      setState(() {
-                                        tasks.remove(task);
-                                      });
-                                    },
-                                    child: ListTile(
-                                      key: ValueKey(task),
-                                      title: Text(task),
-                                      trailing: const Icon(Icons.drag_handle),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                          TextButton.icon(
-                            onPressed: () => _addTaskForDay(context, day),
-                            icon: const Icon(Icons.add),
-                            label: const Text("Add Task"),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _addTaskForDay(BuildContext context, String day) {
-    TextEditingController taskController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text("Add Task for $day"),
-          content: TextField(
-            controller: taskController,
-            decoration: const InputDecoration(hintText: "Enter task name"),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop(); // Close the dialog
-              },
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  weeklyTasks[day]!.add(taskController.text);
-                });
-                Navigator.of(dialogContext).pop(); // Close the dialog
-              },
-              child: const Text("Add"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final todayTasks = weeklyTasks[widget.title.split(" ")[0]] ?? [];
-    return CardTemplateSimple(
-      baseHeight: 400,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with title and options
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: () {
-                  _showWeeklyPopup(context);
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          // Draggable list of today's tasks
-          Expanded(
-            child: ReorderableListView(
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) {
-                    newIndex -= 1;
-                  }
-                  final task = todayTasks.removeAt(oldIndex);
-                  todayTasks.insert(newIndex, task);
-                });
-              },
-              children: todayTasks
-                  .map(
-                    (task) => Dismissible(
-                      key: ValueKey(task),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        color: Colors.red,
-                        child: const Icon(Icons.delete, color: Colors.white),
-                      ),
-                      onDismissed: (direction) {
-                        setState(() {
-                          todayTasks.remove(task);
-                        });
-                      },
-                      child: ListTile(
-                        key: ValueKey(task),
-                        title: Text(task),
-                        trailing: const Icon(Icons.drag_handle),
-                      ),
-                    ),
-                  )
-                  .toList(),
+    return MouseRegion(
+      onEnter: (event) => setState(() => isMouseInAWidget = true),
+      onExit: (event) => setState(() => isMouseInAWidget = false),
+      child: CardTemplateSimple(
+          baseHeight: widget.baseHeight,
+          child: SfCalendar(
+            view: CalendarView.workWeek, // Use week view for more detailed events
+            firstDayOfWeek: 1, // Start the week on Monday
+            todayHighlightColor:
+                Colors.orange, // Highlight today's date in orange
+            selectionDecoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.3), // Highlight selected date
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(5),
             ),
-          ),
-        ],
-      ),
+            headerStyle: const CalendarHeaderStyle(
+              textAlign: TextAlign.center,
+              backgroundColor: Colors.deepPurple,
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            viewHeaderStyle: ViewHeaderStyle(
+              backgroundColor: Colors.purple.shade100,
+              dayTextStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+              dateTextStyle: const TextStyle(
+                color: Colors.black54,
+                fontSize: 12,
+              ),
+            ),
+            dataSource: EventDataSource(_getDataSource()),
+            timeSlotViewSettings: const TimeSlotViewSettings(
+              startHour: 8, // Display events starting from 8 AM
+              endHour: 20, // Ending at 8 PM
+              timeFormat: 'h:mm a', // AM/PM format for times
+              timeIntervalHeight: 60,
+              timeTextStyle: TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+              ),
+            ),
+            appointmentTextStyle: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+            monthViewSettings: const MonthViewSettings(
+              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+              showAgenda: true, // Show agenda at the bottom in month view
+              agendaStyle: AgendaStyle(
+                backgroundColor: Colors.purple,
+                appointmentTextStyle: TextStyle(color: Colors.white),
+              ),
+            ),
+            showNavigationArrow:
+                true, // Add navigation arrows for better usability
+          )),
     );
+  }
+
+  List<Appointment> _getDataSource() {
+    final List<Appointment> meetings = <Appointment>[];
+
+    // Example of events
+    meetings.add(Appointment(
+      startTime: DateTime.now(),
+      endTime: DateTime.now().add(const Duration(hours: 1)),
+      subject: 'Meeting',
+      color: Colors.blue,
+    ));
+
+    meetings.add(Appointment(
+      startTime: DateTime.now().add(const Duration(days: 2, hours: 3)),
+      endTime: DateTime.now().add(const Duration(days: 2, hours: 4)),
+      subject: 'Conference',
+      color: Colors.red,
+    ));
+
+    meetings.add(Appointment(
+      startTime: DateTime.now().add(const Duration(days: 5)),
+      endTime: DateTime.now().add(const Duration(days: 5, hours: 2)),
+      subject: 'Workshop',
+      color: Colors.green,
+    ));
+
+    return meetings;
+  }
+}
+
+/// Custom data source class for events
+class EventDataSource extends CalendarDataSource {
+  EventDataSource(List<Appointment> appointments) {
+    this.appointments = appointments;
   }
 }

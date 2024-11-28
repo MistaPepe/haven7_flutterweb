@@ -70,7 +70,9 @@ class _MediumLayoutState extends State<MediumLayout> {
                           child: ScrollConfiguration(
                               behavior: ScrollConfiguration.of(context)
                                   .copyWith(scrollbars: false),
-                              child: tabControl()),
+                              child: SingleChildScrollView(
+                                physics: getIsMouseInAWidget,
+                                child: tabControl())),
                         )
                       ],
                     ),
