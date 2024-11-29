@@ -2,8 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
-import '../../../provider/provider.dart';
 import '../components.dart';
 
 class DashboarLayout extends StatefulWidget {
@@ -14,71 +12,130 @@ class DashboarLayout extends StatefulWidget {
 }
 
 class _DashboarLayoutState extends State<DashboarLayout> {
+  bool isMouseInAWidget = false;
+
+  double _sharedHeight = 0;
+
+  void _updateSharedHeight(BuildContext context) {
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      final newHeight = renderBox.size.height;
+      if (_sharedHeight != newHeight) {
+        setState(() {
+          _sharedHeight = newHeight;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: const EdgeInsets.all(20),
-        height: MediaQuery.of(context).size.height, // 60% of screen height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            const CardStatisticsWrapper(),
-            const SizedBox(
-              height: 20,
+    var schedWidget = MouseRegion(
+      onEnter: (_) => setState(() {
+        isMouseInAWidget = true;
+      }),
+      onExit: (_) => setState(() {
+        isMouseInAWidget = false;
+      }),
+      child: const TodayActivityWidget(
+        title: "Thursday Task",
+      ),
+    );
+
+    return ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: Container(
+            margin: const EdgeInsets.all(20),
+            height: MediaQuery.of(context).size.height, // 60% of screen height,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
             ),
-            LayoutBuilder(builder: (context, constraint) {
-              return (constraint.maxWidth > 1000)
-                  ? Row(
-                      children: [
-                        const Expanded(flex: 5, child: GraphOverallSales()),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Expanded(
-                            flex: 2,
-                            child: PendingCustomerOrder(
-                              customerList: listOfCustomerurgent,
-                            ))
-                      ],
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const GraphOverallSales(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        PendingCustomerOrder(
-                          customerList: listOfCustomerurgent,
+            clipBehavior: Clip.antiAlias,
+            child: ListView(
+              physics: (isMouseInAWidget)
+                  ? const NeverScrollableScrollPhysics()
+                  : const BouncingScrollPhysics(),
+              shrinkWrap: true,
+              children: [
+                const CardStatisticsWrapper(),
+                const SizedBox(
+                  height: 20,
+                ),
+                LayoutBuilder(builder: (context, constraint) {
+                  return (constraint.maxWidth > 1000)
+                      ? Row(
+                          children: [
+                            const Expanded(flex: 5, child: GraphOverallSales()),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Expanded(
+                                flex: 2,
+                                child: PendingCustomerOrder(
+                                  customerList: listOfCustomerurgent,
+                                ))
+                          ],
                         )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const GraphOverallSales(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            PendingCustomerOrder(
+                              customerList: listOfCustomerurgent,
+                            )
+                          ],
+                        );
+                }),
+                const SizedBox(
+                  height: 20,
+                ),
+                LayoutBuilder(builder: (context, constraint) {
+                  if (constraint.maxWidth > 800) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          flex:3,
+                          child: SizedBox(
+                              height: _sharedHeight,
+                              child: schedWidget),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          flex: 5,
+                          child: LayoutBuilder(
+                            builder: (context, _) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                _updateSharedHeight(context);
+                              });
+                              return const TodayOverallPieChart();
+                            },
+                          ),
+                        ),
                       ],
                     );
-            }),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: [
-                Expanded(child: TodayOverallPieChart()),
-                const SizedBox(
-                  width: 20,
-                ),
-                Flexible(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => TodayActivityWidget(
-                      baseHeight: 300,
-                      title: "Thursday Task",
-                    ),
-                  ),
-                ),
+                  } else {
+                    return const Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(
+                          width: 400,
+                          height: 430,
+                          child: TodayActivityWidget(
+                            title: "Thursday Task",
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        TodayOverallPieChart(),
+                      ],
+                    );
+                  }
+                })
               ],
-            ),
-          ],
-        ));
+            )));
   }
 }
 
@@ -772,6 +829,10 @@ List<CustomerUrgentDetails> listOfCustomerurgent = [
   customer2,
   customer3,
   customer5,
+  customer5,
+  customer2,
+  customer3,
+  customer5,
   customer6,
 ];
 
@@ -788,10 +849,8 @@ class CustomerUrgentDetails {
 
 class TodayActivityWidget extends StatefulWidget {
   final String title;
-  final double baseHeight;
 
-  const TodayActivityWidget(
-      {required this.title, required this.baseHeight, super.key});
+  const TodayActivityWidget({required this.title, super.key});
 
   @override
   State<TodayActivityWidget> createState() => _TodayActivityWidgetState();
@@ -800,70 +859,66 @@ class TodayActivityWidget extends StatefulWidget {
 class _TodayActivityWidgetState extends State<TodayActivityWidget> {
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (event) => setState(() => isMouseInAWidget = true),
-      onExit: (event) => setState(() => isMouseInAWidget = false),
-      child: CardTemplateSimple(
-          baseHeight: widget.baseHeight,
-          child: SfCalendar(
-            view: CalendarView.workWeek, // Use week view for more detailed events
-            firstDayOfWeek: 1, // Start the week on Monday
-            todayHighlightColor:
-                Colors.orange, // Highlight today's date in orange
-            selectionDecoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.3), // Highlight selected date
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            headerStyle: const CalendarHeaderStyle(
-              textAlign: TextAlign.center,
-              backgroundColor: Colors.deepPurple,
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            viewHeaderStyle: ViewHeaderStyle(
-              backgroundColor: Colors.purple.shade100,
-              dayTextStyle: const TextStyle(
-                color: Colors.black,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              dateTextStyle: const TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-              ),
-            ),
-            dataSource: EventDataSource(_getDataSource()),
-            timeSlotViewSettings: const TimeSlotViewSettings(
-              startHour: 8, // Display events starting from 8 AM
-              endHour: 20, // Ending at 8 PM
-              timeFormat: 'h:mm a', // AM/PM format for times
-              timeIntervalHeight: 60,
-              timeTextStyle: TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
-            ),
-            appointmentTextStyle: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+    return CardTemplateSimple(
+        baseHeight: 400,
+        child: SfCalendar(
+          view: CalendarView.workWeek, // Use week view for more detailed events
+          firstDayOfWeek: 1, // Start the week on Monday
+          todayHighlightColor:
+              Colors.orange, // Highlight today's date in orange
+          selectionDecoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.3), // Highlight selected date
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          headerStyle: const CalendarHeaderStyle(
+            textAlign: TextAlign.center,
+            backgroundColor: Color.fromARGB(255, 58, 87, 183),
+            textStyle: const TextStyle(
               color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            monthViewSettings: const MonthViewSettings(
-              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-              showAgenda: true, // Show agenda at the bottom in month view
-              agendaStyle: AgendaStyle(
-                backgroundColor: Colors.purple,
-                appointmentTextStyle: TextStyle(color: Colors.white),
-              ),
+          ),
+          viewHeaderStyle: ViewHeaderStyle(
+            backgroundColor: Colors.purple.shade100,
+            dayTextStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
-            showNavigationArrow:
-                true, // Add navigation arrows for better usability
-          )),
-    );
+            dateTextStyle: const TextStyle(
+              color: Colors.black54,
+              fontSize: 12,
+            ),
+          ),
+          dataSource: EventDataSource(_getDataSource()),
+          timeSlotViewSettings: const TimeSlotViewSettings(
+            startHour: 7, // Display events starting from 8 AM
+            endHour: 18, // Ending at 8 PM
+            timeFormat: 'h:mm a', // AM/PM format for times
+            timeIntervalHeight: 60,
+            timeTextStyle: TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
+          appointmentTextStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+          monthViewSettings: const MonthViewSettings(
+            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+            showAgenda: true, // Show agenda at the bottom in month view
+            agendaStyle: AgendaStyle(
+              backgroundColor: Colors.purple,
+              appointmentTextStyle: TextStyle(color: Colors.white),
+            ),
+          ),
+          showNavigationArrow:
+              true, // Add navigation arrows for better usability
+        ));
   }
 
   List<Appointment> _getDataSource() {
