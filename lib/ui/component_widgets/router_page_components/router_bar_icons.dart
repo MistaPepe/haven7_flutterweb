@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../provider/provider.dart';
+import '../components_and_routers.dart';
 
 class CustomDrawerBuilder extends StatefulWidget {
   final bool? drawerForceOpen;
@@ -8,6 +9,7 @@ class CustomDrawerBuilder extends StatefulWidget {
 
   bool get drawerOpen => drawerForceOpen ?? DrawerRouter.isDrawerOpen;
 
+  //builder method to build a single row of router, for its icon and name if opened
   Widget routerRow(
       BuildContext context, String name, IconData icon, bool isHover) {
     List<Color> getGradientColors() {
@@ -78,6 +80,10 @@ class CustomDrawerBuilder extends StatefulWidget {
     );
   }
 
+///this is only the top part, the logo and the name of the website on the top left corner
+///so its kinda misleading but it is planned to have the bottom part of routers as a child
+///this is the  bottom routers    |
+///                               V
   Widget layoutDrawer(Widget routerList) {
     return Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -123,6 +129,40 @@ class CustomDrawerBuilder extends StatefulWidget {
 }
 
 class _CustomDrawerBuilderState extends State<CustomDrawerBuilder> {
+  
+  Widget tabControl() {
+  return Navigator(
+    key: GlobalKey<NavigatorState>(), // Unique key for nested navigation
+    initialRoute: '/dashboard', // Default route
+    onGenerateRoute: (RouteSettings settings) {
+      WidgetBuilder builder;
+      switch (settings.name) {
+        case '/dashboard':
+          builder = (BuildContext _) => const DashboardLayout();
+          break;
+        case '/statistics':
+          builder = (BuildContext _) => const StatisticsLayout(); // Replace with actual layout
+          break;
+        case '/products':
+          builder = (BuildContext _) => const ProductsLayout(); // Replace with actual layout
+          break;
+        case '/customer':
+          builder = (BuildContext _) => const CustomerLayout(); // Replace with actual layout
+          break;
+        case '/news':
+          builder = (BuildContext _) => const NewsLayout(); // Replace with actual layout
+          break;
+        case '/account':
+          builder = (BuildContext _) => const AccountLayout(); // Replace with actual layout
+          break;
+        default:
+          builder = (BuildContext _) => const Placeholder();
+      }
+      return MaterialPageRoute(builder: builder, settings: settings);
+    },
+  );
+}
+  
   Widget routerDrawer() {
     ///method to section each router, either top or bottom routers
     List<Widget> routerListMap({bool low = false}) {

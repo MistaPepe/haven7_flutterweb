@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:haven7_flutterweb/provider/general.dart';
-import 'package:haven7_flutterweb/ui/component_widgets/components.dart';
+import 'package:haven7_flutterweb/ui/component_widgets/components_and_routers.dart';
 
 class MediumLayout extends StatefulWidget {
   const MediumLayout({super.key});
@@ -13,10 +13,13 @@ class _MediumLayoutState extends State<MediumLayout> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Widget tabControl() {
-    if (DrawerRouter.currentPage == 'Dashboard') {
-      return const DashboarLayout();
-    } else {
-      return const Placeholder();
+    switch (DrawerRouter.currentPage) {
+      case 'Dashboard':
+        return DashboardLayout();
+      case 'Statistics': //ill add later other routes
+      return Placeholder();
+      default:
+      return Placeholder();
     }
   }
 

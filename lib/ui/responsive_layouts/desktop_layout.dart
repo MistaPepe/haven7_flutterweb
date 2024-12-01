@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../provider/provider.dart';
-import '../component_widgets/components.dart';
+import '../component_widgets/components_and_routers.dart';
 
 class DesktopLayout extends StatefulWidget {
   const DesktopLayout({super.key});
@@ -10,9 +10,10 @@ class DesktopLayout extends StatefulWidget {
 }
 
 class _DesktopLayoutState extends State<DesktopLayout> {
+  
   Widget tabControl() {
     if (DrawerRouter.currentPage == 'Dashboard') {
-      return const DashboarLayout();
+      return const DashboardLayout();
     } else {
       return const Placeholder();
     }

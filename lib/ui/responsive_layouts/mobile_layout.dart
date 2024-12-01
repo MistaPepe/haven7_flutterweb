@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../component_widgets/components.dart';
+import 'package:flutter/rendering.dart';
+import '../component_widgets/components_and_routers.dart';
 
 class MobileLayout extends StatefulWidget {
   const MobileLayout({super.key});
@@ -9,23 +10,76 @@ class MobileLayout extends StatefulWidget {
 }
 
 class _MobileLayoutState extends State<MobileLayout> {
+ bool _showAppBar = true; // Tracks the visibility of the app bar
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_handleScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_handleScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _handleScroll() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      // Hide AppBar on scroll down
+      if (_showAppBar) setState(() => _showAppBar = false);
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      // Show AppBar on scroll up
+      if (!_showAppBar) setState(() => _showAppBar = true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-      ),
-      drawer:const CustomConcealingDrawer(),
-      body: Container(
-        color: Color.fromARGB(255, 236, 236, 236),
-        child: ListView(
-          children: [
-           DashboarLayout(),
-
-          ],
+      drawer: const CustomConcealingDrawer(),
+      extendBodyBehindAppBar: true, // Allows body to go behind the AppBar
+      body: NestedScrollView(
+        controller: _scrollController, // Attach the scroll controller
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              expandedHeight: 250.0, // Height when expanded
+              floating: false,
+              pinned: _showAppBar, // Toggles the AppBar visibility
+              backgroundColor: Colors.transparent,
+              elevation: 0, // Removes shadow
+              flexibleSpace: FlexibleSpaceBar(
+                title: const Text(
+                  "Transparent AppBar",
+                  style: TextStyle(color: Colors.white),
+                ),
+                background: Image.network(
+                  'https://picsum.photos/250?image=9', // Replace with your image URL
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ];
+        },
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 28, 41, 158),
+                Color.fromARGB(255, 0, 49, 212),
+                Color.fromARGB(255, 26, 74, 233),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: const DashboardLayout(), // Your body content here
         ),
       ),
     );

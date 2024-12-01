@@ -2,16 +2,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import '../components.dart';
+import '../components_and_routers.dart';
 
-class DashboarLayout extends StatefulWidget {
-  const DashboarLayout({super.key});
+class DashboardLayout extends StatefulWidget {
+  const DashboardLayout({super.key});
 
   @override
-  State<DashboarLayout> createState() => _DashboarLayoutState();
+  State<DashboardLayout> createState() => _DashboardLayoutState();
 }
 
-class _DashboarLayoutState extends State<DashboarLayout> {
+class _DashboardLayoutState extends State<DashboardLayout> {
   bool isMouseInAWidget = false;
 
   double _sharedHeight = 0;
