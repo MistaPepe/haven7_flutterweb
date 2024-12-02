@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 
 //default template for card widget
+// this widget have future build in it, for widgets that needs cloud data
 class CardTemplateBox extends StatefulWidget {
   final int baseWidth;
   final int baseHeight;
@@ -113,6 +114,7 @@ class _CardTemplateBoxState extends State<CardTemplateBox> {
   }
 }
 
+//simpler card template if just wanting white card
 class CardTemplateSimple extends StatelessWidget {
   final bool isCurved;
   final bool haveShadow;
