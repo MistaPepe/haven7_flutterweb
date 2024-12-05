@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../provider/provider.dart';
@@ -11,14 +13,16 @@ class CustomCallbackButton extends StatelessWidget {
   final double? paddingWidth;
   final bool dividerForicon;
 
-
-  const CustomCallbackButton(
-      {required this.text,
-      required this.onPressed,
-      super.key,
-      this.icon,
-      this.image, this.paddingHeight, this.paddingWidth,  this.dividerForicon = false,
-     });
+  const CustomCallbackButton({
+    required this.text,
+    required this.onPressed,
+    super.key,
+    this.icon,
+    this.image,
+    this.paddingHeight,
+    this.paddingWidth,
+    this.dividerForicon = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +31,17 @@ class CustomCallbackButton extends StatelessWidget {
       child: IntrinsicWidth(
         // Wrap with IntrinsicWidth
         child: MouseRegion(
-           cursor: SystemMouseCursors.click,
+          cursor: SystemMouseCursors.click,
           child: Container(
             decoration: BoxDecoration(
-              image:(image == null) ? null : DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage(
-                  image!,
-                ),
-              ),
+              image: (image == null)
+                  ? null
+                  : DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage(
+                        image!,
+                      ),
+                    ),
               gradient: const LinearGradient(
                 colors: [
                   Color(0xFF007BFF), // Start color
@@ -53,7 +59,8 @@ class CustomCallbackButton extends StatelessWidget {
                 ),
               ],
             ),
-            padding: EdgeInsets.symmetric(vertical: paddingHeight ?? 12, horizontal: paddingWidth ?? 10),
+            padding: EdgeInsets.symmetric(
+                vertical: paddingHeight ?? 12, horizontal: paddingWidth ?? 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,16 +78,16 @@ class CustomCallbackButton extends StatelessWidget {
                 //Divider for text and icon
                 (dividerForicon)
                     ? Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Divider()!,
-                    )
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Divider()!,
+                      )
                     : const SizedBox(),
                 // If icon exists
                 (icon != null)
                     ? Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: icon!,
-                    )
+                        padding: const EdgeInsets.only(left: 10),
+                        child: icon!,
+                      )
                     : const SizedBox()
               ],
             ),
@@ -120,21 +127,57 @@ class CustomAppBarButtons extends StatelessWidget {
       onPressed: () => menuFunction!(),
     );
 
-    return Row(
-      children: [
-        (hasMenuButton) ? menuButton : const SizedBox(),
-        //appbar widget
-        const Expanded(
-            child: Align(
-                alignment: Alignment.centerRight,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: BellNotification(
-                    notification: 99,
+            return Row(
+              children: [
+                (hasMenuButton) ? menuButton : const SizedBox(),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomCallbackButton(
+                        icon: const Icon(
+                          Icons.upload,
+                          color: Color.fromARGB(255, 255, 255, 255),
+                        ),
+                        text: 'Upload Product',
+                        onPressed: () {},
+                        image:
+                            'lib/src/crystalizebg.png', // Use your image path
+                      ),
+                      const SizedBox(
+                        width: 40,
+                      ),
+                      const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: BellNotification(
+                          notification: 3,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 30,
+                      ),
+                    ],
                   ),
-                ))),
-      ],
+                ),
+              ],
+            );
+    
+  }
+
+  Future<ImageInfo> _loadImage(String assetPath) async {
+    final completer = Completer<ImageInfo>();
+    final imageStream = AssetImage(assetPath).resolve(ImageConfiguration.empty);
+    final listener = ImageStreamListener(
+      (ImageInfo info, bool _) {
+        completer.complete(info);
+      },
+      onError: (dynamic error, StackTrace? stackTrace) {
+        completer.completeError(error, stackTrace);
+      },
     );
+    imageStream.addListener(listener);
+    completer.future.whenComplete(() => imageStream.removeListener(listener));
+    return completer.future;
   }
 }
 

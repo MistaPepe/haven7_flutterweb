@@ -53,6 +53,3 @@ void toggleState() => emit(!state);
 }
 
 
-
-
-double contraintOfPieChart = 0;

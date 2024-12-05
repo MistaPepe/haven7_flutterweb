@@ -49,20 +49,28 @@ class _MobileLayoutState extends State<MobileLayout> {
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              expandedHeight: 250.0, // Height when expanded
+              expandedHeight: 100.0, // Height when expanded
               floating: false,
               pinned: _showAppBar, // Toggles the AppBar visibility
               backgroundColor: Colors.transparent,
               elevation: 0, // Removes shadow
               flexibleSpace: FlexibleSpaceBar(
                 title: const Text(
-                  "Transparent AppBar",
+                  "HAVEN 7",
                   style: TextStyle(color: Colors.white),
                 ),
-                background: Image.network(
-                  'https://picsum.photos/250?image=9', // Replace with your image URL
-                  fit: BoxFit.cover,
-                ),
+                background: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 70, 79, 158),
+                Color.fromARGB(255, 0, 49, 212),
+                Color.fromARGB(255, 26, 74, 233),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+            ),
+          ),)
               ),
             ),
           ];

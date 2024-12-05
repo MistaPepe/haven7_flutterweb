@@ -29,19 +29,15 @@ class AppColors {
 
 //line graph with goal in red line, or average
 class LineGraphAverage extends StatefulWidget {
-  const LineGraphAverage({super.key});
+  final List<FlSpot> spots;
+  const LineGraphAverage({super.key, required this.spots});
 
   @override
   State<LineGraphAverage> createState() => _LineGraphAverageState();
 }
 
 class _LineGraphAverageState extends State<LineGraphAverage> {
-  var spots = List.generate(
-    30,
-    (index) {
-      return FlSpot(index.toDouble(), 1000 + (index * 20));
-    },
-  );
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +119,7 @@ class _LineGraphAverageState extends State<LineGraphAverage> {
         borderData: FlBorderData(show: false),
         lineBarsData: [
           LineChartBarData(
-            spots: spots,
+            spots: widget.spots,
             isCurved: true,
             color: Colors.blueAccent,
             barWidth: 3,

@@ -1,7 +1,9 @@
 import 'dart:math';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../../provider/provider.dart';
 import '../components_and_routers.dart';
 
 class DashboardLayout extends StatefulWidget {
@@ -98,10 +100,9 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Flexible(
-                          flex:3,
+                          flex: 3,
                           child: SizedBox(
-                              height: _sharedHeight,
-                              child: schedWidget),
+                              height: _sharedHeight, child: schedWidget),
                         ),
                         const SizedBox(width: 20),
                         Expanded(
@@ -145,6 +146,7 @@ class UpperCardTemplate extends StatelessWidget {
   final String title;
   final IconData icon;
   final int percentage;
+  final bool isPositive;
 
   const UpperCardTemplate({
     super.key,
@@ -152,6 +154,7 @@ class UpperCardTemplate extends StatelessWidget {
     required this.title,
     required this.icon,
     required this.percentage,
+    required this.isPositive,
   });
 
   @override
@@ -169,12 +172,15 @@ class UpperCardTemplate extends StatelessWidget {
               ),
 
               // Title below the icon
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ],
@@ -187,27 +193,31 @@ class UpperCardTemplate extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Flexible(
-                flex: 8,
-                child: Text(
-                  '$numbers',
-                  style: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '$numbers',
+                      style: const TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ),
               ),
               // Percentage at the bottom or graph
               Flexible(
-                flex: 10,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       '+ $percentage%',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
-                        color: Colors.green,
+                        color: (isPositive) ? Colors.green : Colors.red,
                       ),
                     ),
                   ],
@@ -224,12 +234,19 @@ class UpperCardTemplate extends StatelessWidget {
             ),
             Expanded(
               child: Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                      Color.fromARGB(255, 141, 255, 145),
-                      Color.fromARGB(255, 216, 255, 107),
-                      Color.fromARGB(255, 141, 255, 145)
-                    ]),
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: (isPositive)
+                            ? const [
+                                Color.fromARGB(255, 141, 255, 145),
+                                Color.fromARGB(255, 216, 255, 107),
+                                Color.fromARGB(255, 141, 255, 145)
+                              ]
+                            : const [
+                                Color.fromARGB(255, 255, 141, 141),
+                                Color.fromARGB(255, 255, 160, 35),
+                                Color.fromARGB(255, 255, 141, 141)
+                              ]),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(5),
                         topRight: Radius.circular(5))),
@@ -253,8 +270,8 @@ class CardStatisticsWrapper extends StatelessWidget {
   static const int _baseWidth = 280;
   static const int _baseHeight = 150;
 
-  static Widget template(
-      IconData icon, String title, int numbers, int percentage) {
+  static Widget template(IconData icon, String title, int numbers,
+      int percentage, bool isPositive) {
     return CardTemplateBox(
         haveShadow: false,
         isCurved: true,
@@ -265,24 +282,15 @@ class CardStatisticsWrapper extends StatelessWidget {
           title: title,
           numbers: numbers,
           percentage: percentage,
+          isPositive: isPositive,
         ));
   }
 
   static final List<Widget> _cardContent = [
-    template(Icons.monetization_on, 'Today\'s earning', 3000, 11),
-    template(Icons.bar_chart, 'Monthly Earnings', 3000, 11),
-    template(
-      Icons.shopping_cart,
-      'Total Orders',
-      3000,
-      11,
-    ),
-    template(
-      Icons.money_off,
-      'Expenses',
-      3000,
-      11,
-    ),
+    template(Icons.monetization_on, 'Today\'s earning', 3000, 11, true),
+    template(Icons.bar_chart, 'Monthly Earnings', 34000, 30, true),
+    template(Icons.shopping_cart, 'Total Orders', 120, 5, true),
+    template(Icons.money_off, 'Expenses', 15000, 11, false),
   ];
 
   @override
@@ -319,6 +327,19 @@ class GraphOverallSales extends StatefulWidget {
   State<GraphOverallSales> createState() => _GraphOverallSalesState();
 }
 
+List<FlSpot> spots = List.generate(400, (index) {
+      double currentValue = 2000;
+      // Generate a random fluctuation within a larger range
+      double fluctuation = Random().nextDouble() * 1000 -
+          500; // Random value between -500 and +500
+      currentValue += fluctuation;
+
+      // Ensure the value stays within the range of 1500 to 3000
+      currentValue = currentValue.clamp(1500, 3000);
+      currentValue += fluctuation; // Add fluctuation to the current value
+      return FlSpot(index.toDouble(), currentValue);
+    });
+
 class _GraphOverallSalesState extends State<GraphOverallSales> {
   // Initial selected value
   static String selectedValue = '7 Days';
@@ -334,8 +355,34 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
     'Overall'
   ];
 
+  daysSelected(String value) {
+    switch (value) {
+      case '7 Days':
+        return 7;
+      case '15 Days':
+        return 15;
+      case '30 days':
+        return 30;
+      case '3 Months':
+        return 90;
+      case '6 Months':
+        return 180;
+      case 'Year':
+        return 365;
+      default:
+        return 400;
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    List<FlSpot> returnSpots = [];
+    for(int i = 0; i < daysSelected(selectedValue); i++){
+      returnSpots.add(spots[i]);
+    }
+
     var optionButton = DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         icon: const Icon(
@@ -398,10 +445,12 @@ class _GraphOverallSalesState extends State<GraphOverallSales> {
               ),
             ],
           ),
-          const Expanded(
+          Expanded(
               child: Padding(
-            padding: EdgeInsets.all(20),
-            child: LineGraphAverage(),
+            padding: const EdgeInsets.all(20),
+            child: LineGraphAverage(
+              spots: returnSpots,
+            ),
           )),
         ],
       ),
@@ -813,34 +862,6 @@ class _PendingCustomerOrderState extends State<PendingCustomerOrder> {
       return containerBuilder(layoutList());
     }
   }
-}
-
-//example for customer
-var customer1 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
-var customer5 = const CustomerUrgentDetails('butu', Icon(Icons.person), 1);
-var customer6 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
-var customer2 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
-var customer3 = const CustomerUrgentDetails('Justin', Icon(Icons.person), 1);
-
-List<CustomerUrgentDetails> listOfCustomerurgent = [
-  customer1,
-  customer5,
-  customer5,
-  customer2,
-  customer3,
-  customer5,
-  customer5,
-  customer2,
-  customer3,
-  customer5,
-  customer6,
-];
-
-class CustomerUrgentDetails {
-  final String name;
-  final Widget icon;
-  final int time;
-  const CustomerUrgentDetails(this.name, this.icon, this.time);
 }
 
 ///-------------------------------------------------------------------------------
