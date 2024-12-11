@@ -1,5 +1,10 @@
 # haven7_flutterweb *Still in development* 
 
+<<<<<<< HEAD
+=======
+***Still in development***
+
+>>>>>>> 300fafcfc8ee21ffe8bf0ad1638bf4b4115eefdc
 website using flutter
 
 *Dashboard
