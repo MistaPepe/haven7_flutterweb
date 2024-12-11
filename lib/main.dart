@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:haven7_flutterweb/ui/responsive_layout.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,3 +14,7 @@ void main() async {
           projectId: "haven7-15569"));
   runApp(const Websitelayout());
 }
+
+
+//Platform  Firebase App Id
+//web       1:390273009411:web:e758fdb95322b3bf0f8b36
